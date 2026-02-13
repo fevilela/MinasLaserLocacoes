@@ -381,8 +381,8 @@ const App: React.FC = () => {
     },
     {
       id: '4',
-      title: 'INC',
-      description: 'O INC é um laser de alta performance para remoção de tatuagem e lesões pigmentadas em clínicas de ponta. Com o INC, você amplia possibilidades de tratamento com segurança e resultados consistentes.',
+      title: 'INKIE',
+      description: 'O Inkie é um laser de alta performance para remoção de tatuagem e lesões pigmentadas em clínicas de ponta. Com o INC, você amplia possibilidades de tratamento com segurança e resultados consistentes.',
       highlight: 'LASER ND-YAG-Q-SWITCH',
       image: imageUrl('Inkie%20Laser.png'),
       category: 'Remoção de Tatuagem',
@@ -882,7 +882,7 @@ const App: React.FC = () => {
         <div className="relative z-10 w-full max-w-7xl mx-auto px-6">
           <div className="animate-slideUp text-center">
             <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-fuchsia-50 text-[10px] font-black text-[var(--brand-hot)] uppercase tracking-[0.35em]">
-              Atendimento em Minas Gerais
+              +1200 clínicas com faturamento transformado
             </span>
             <h1 className="mt-6 w-full max-w-5xl mx-auto text-3xl md:text-5xl lg:text-6xl font-black uppercase tracking-tight text-black leading-[0.92]">
               <span className="block">Alugue Equipamentos</span>
