@@ -88,6 +88,41 @@ const openRotatingWhatsApp = (text: string) => {
   window.open(url, '_blank', 'noopener,noreferrer');
 };
 
+const trackEvent = (eventName: string, params: Record<string, string> = {}) => {
+  if (typeof window === 'undefined') return;
+  const w = window as any;
+  const payload = {
+    ...params,
+    page_path: w.location?.pathname || '/',
+    page_hash: w.location?.hash || '',
+  };
+
+  if (typeof w.gtag === 'function') {
+    w.gtag('event', eventName, payload);
+  }
+  if (Array.isArray(w.dataLayer)) {
+    w.dataLayer.push({ event: eventName, ...payload });
+  }
+  if (typeof w.fbq === 'function') {
+    if (eventName === 'lead_form_submit_success') {
+      w.fbq('track', 'Lead', payload);
+    } else {
+      w.fbq('trackCustom', eventName, payload);
+    }
+  }
+};
+
+const handleWhatsAppCtaClick = (
+  e: React.MouseEvent<HTMLAnchorElement>,
+  text: string,
+  section: string,
+  cta: string,
+) => {
+  e.preventDefault();
+  trackEvent('whatsapp_click', { section, cta, channel: 'whatsapp' });
+  openRotatingWhatsApp(text);
+};
+
 const HeroParticles: React.FC = () => (
   <div className="absolute inset-0 pointer-events-none z-20">
     {[...Array(15)].map((_, i) => (
@@ -160,8 +195,7 @@ const EquipmentModal: React.FC<{ equipment: Equipment; onClose: () => void }> = 
               <a
                 href={getDefaultWhatsAppLink(equipmentWhatsappText)}
                 onClick={(e) => {
-                  e.preventDefault();
-                  openRotatingWhatsApp(equipmentWhatsappText);
+                  handleWhatsAppCtaClick(e, equipmentWhatsappText, 'modal_equipamento', `falar_whatsapp_${equipment.title.toLowerCase().replace(/\s+/g, '_')}`);
                 }}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -234,8 +268,7 @@ const CourseModal: React.FC<{ course: Course; onClose: () => void }> = ({ course
                <a
                  href={getDefaultWhatsAppLink(courseWhatsappText)}
                  onClick={(e) => {
-                   e.preventDefault();
-                   openRotatingWhatsApp(courseWhatsappText);
+                   handleWhatsAppCtaClick(e, courseWhatsappText, 'modal_curso', `falar_whatsapp_${course.title.toLowerCase().replace(/\s+/g, '_')}`);
                  }}
                  target="_blank"
                  rel="noopener noreferrer"
@@ -284,7 +317,7 @@ const PostModal: React.FC<{ post: BlogPost; onClose: () => void }> = ({ post, on
             </div>
           </div>
           <div className="mt-16 pt-12 border-t border-slate-100">
-             <a href="#contato" onClick={onClose} className="inline-flex items-center gap-4 text-[10px] font-black uppercase tracking-[0.4em] bg-gradient-to-r from-[var(--brand-hot)] to-[var(--brand-wine)] bg-clip-text text-transparent hover:text-black transition-colors group">Falar sobre tecnologia <ArrowRight className="w-4 h-4 group-hover:translate-x-2 transition-transform text-[var(--brand-hot)]" /></a>
+             <a href="#contato" onClick={() => { trackEvent('cta_click', { section: 'modal_blog', cta: 'falar_sobre_tecnologia', channel: 'onsite' }); onClose(); }} className="inline-flex items-center gap-4 text-[10px] font-black uppercase tracking-[0.4em] bg-gradient-to-r from-[var(--brand-hot)] to-[var(--brand-wine)] bg-clip-text text-transparent hover:text-black transition-colors group">Falar sobre tecnologia <ArrowRight className="w-4 h-4 group-hover:translate-x-2 transition-transform text-[var(--brand-hot)]" /></a>
           </div>
         </div>
       </div>
@@ -667,6 +700,9 @@ const App: React.FC = () => {
 
   const filteredEquipments = equipments.filter((e) => matchesEquipmentFilter(e, activeCategory));
   const filteredCourses = courses;
+  const trackInternalCta = (section: string, cta: string) => {
+    trackEvent('cta_click', { section, cta, channel: 'onsite' });
+  };
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 50);
@@ -678,10 +714,41 @@ const App: React.FC = () => {
     };
   }, [heroEquipments.length]);
 
+  useEffect(() => {
+    if (typeof window === 'undefined' || typeof IntersectionObserver === 'undefined') return;
+
+    const sectionIds = ['home', 'beneficios', 'equipamentos', 'prova-social', 'intencoes-seo', 'seguranca', 'contato'];
+    const seen = new Set<string>();
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const id = entry.target.id;
+          if (entry.isIntersecting && id && !seen.has(id)) {
+            seen.add(id);
+            trackEvent('section_view', { section: id, channel: 'onsite' });
+          }
+        });
+      },
+      { threshold: 0.35 },
+    );
+
+    sectionIds.forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) observer.observe(el);
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setFormError('');
     setFormState('submitting');
+    trackEvent('lead_form_submit_attempt', {
+      section: 'contato',
+      cta: 'quero_atendimento_prioritario',
+      channel: 'form',
+    });
     try {
       if (!LEADS_WEBHOOK_URL) {
         throw new Error('Webhook não configurado');
@@ -704,11 +771,19 @@ const App: React.FC = () => {
         body: JSON.stringify(payload),
       });
 
+      trackEvent('lead_form_submit_success', {
+        section: 'contato',
+        channel: 'form',
+      });
       setFormState('success');
       setLeadForm({ name: '', whatsapp: '' });
       setTimeout(() => setFormState('idle'), 8000);
     } catch (error) {
       console.error('Erro ao enviar lead:', error);
+      trackEvent('lead_form_submit_error', {
+        section: 'contato',
+        channel: 'form',
+      });
       setFormState('idle');
       setFormError('Não foi possível enviar agora. Tente novamente em instantes.');
     }
@@ -737,17 +812,17 @@ const App: React.FC = () => {
         <div className={`container mx-auto px-6 flex justify-between items-center relative ${isScrolled ? 'min-h-[42px] md:min-h-[48px]' : 'min-h-[56px] md:min-h-[72px]'}`}>
           <nav className="hidden lg:flex items-center gap-10 text-[9px] font-bold uppercase tracking-[0.4em] text-slate-400">
             <a href="#home" className="hover:text-black transition-colors">Home</a>
-            <a href="#sobre" className="hover:text-black transition-colors">Sobre</a>
-            <a href="#equipamentos" className="hover:text-black transition-colors">Portfólio</a>
+            <a href="#beneficios" className="hover:text-black transition-colors">Benefícios</a>
+            <a href="#equipamentos" className="hover:text-black transition-colors">Tecnologias</a>
             <a href="#faq" className="hover:text-black transition-colors">FAQ</a>
           </nav>
           <div className="absolute left-1/2 -translate-x-1/2 flex flex-col items-center">
              <img src={imageUrl('Logo.png')} alt="Minas Laser" className={`transition-all duration-700 object-contain drop-shadow-sm ${isScrolled ? 'h-8 md:h-9' : 'h-10 md:h-12'}`} onError={(e) => { e.currentTarget.src = "https://i.ibb.co/LdfV8R9/logo-minas.png"; }} />
           </div>
           <nav className="hidden lg:flex items-center gap-10 text-[9px] font-bold uppercase tracking-[0.4em] text-slate-400">
-            <a href="#cursos" className="hover:text-black transition-colors">Cursos</a>
-            <a href="#blog" className="hover:text-black transition-colors">Blog</a>
-            <a href="#contato" className="hover:text-black transition-colors">Contato</a>
+            <a href="#prova-social" className="hover:text-black transition-colors">Resultados</a>
+            <a href="#seguranca" className="hover:text-black transition-colors">Segurança</a>
+            <a href="#contato" onClick={() => trackInternalCta('header', 'menu_contato')} className="hover:text-black transition-colors">Contato</a>
           </nav>
           <button
             className="lg:hidden text-black z-50"
@@ -761,12 +836,11 @@ const App: React.FC = () => {
             <div className="lg:hidden absolute top-full left-0 right-0 mt-2 px-6">
               <nav className="bg-white/95 backdrop-blur-md border border-fuchsia-100 rounded-2xl shadow-xl p-5 flex flex-col gap-4 text-[11px] font-bold uppercase tracking-[0.25em] text-slate-500">
                 <a href="#home" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-black transition-colors">Home</a>
-                <a href="#sobre" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-black transition-colors">Sobre</a>
-                <a href="#equipamentos" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-black transition-colors">Portfólio</a>
+                <a href="#beneficios" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-black transition-colors">Benefícios</a>
+                <a href="#equipamentos" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-black transition-colors">Tecnologias</a>
+                <a href="#prova-social" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-black transition-colors">Resultados</a>
                 <a href="#faq" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-black transition-colors">FAQ</a>
-                <a href="#cursos" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-black transition-colors">Cursos</a>
-                <a href="#blog" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-black transition-colors">Blog</a>
-                <a href="#contato" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-black transition-colors">Contato</a>
+                <a href="#contato" onClick={() => { trackInternalCta('header_mobile', 'menu_contato'); setIsMobileMenuOpen(false); }} className="hover:text-black transition-colors">Contato</a>
               </nav>
             </div>
           )}
@@ -782,14 +856,14 @@ const App: React.FC = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-14 lg:gap-20 items-center">
             <div className="order-2 lg:order-1 animate-slideUp text-center lg:text-left">
               <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-fuchsia-50 text-[10px] font-black text-[var(--brand-hot)] uppercase tracking-[0.35em]">
-                Lavras - MG
+                Atendimento em Minas Gerais
               </span>
               <h1 className="mt-6 text-4xl md:text-5xl lg:text-6xl font-black uppercase tracking-tighter text-black leading-[0.92]">
-                Locação de Equipamentos Estéticos
-                <span className="block bg-gradient-to-r from-[var(--brand-hot)] to-[var(--brand-wine)] bg-clip-text text-transparent">Premium para Clínicas e Profissionais</span>
+                Alugue Equipamentos Estéticos Premium
+                <span className="block bg-gradient-to-r from-[var(--brand-hot)] to-[var(--brand-wine)] bg-clip-text text-transparent">Sem Imobilizar Capital e Com Mais Faturamento</span>
               </h1>
               <p className="mt-6 text-slate-500 text-base md:text-lg font-light leading-relaxed max-w-xl mx-auto lg:mx-0">
-                Locação de laser estético em Lavras e Minas Gerais, com suporte técnico, treinamento e modelos de alta performance para crescer com previsibilidade.
+                Receba tecnologia de ponta, suporte técnico e treinamento para começar rápido, atender com confiança e pagar apenas pelo período de uso.
               </p>
               <div className="mt-4 flex flex-wrap gap-2 justify-center lg:justify-start">
                 <a href="#depilacao-laser" className="px-3 py-1.5 rounded-full bg-slate-100 text-[10px] font-bold text-slate-600 uppercase tracking-wider hover:bg-slate-200 transition-colors">Locação laser depilação</a>
@@ -802,29 +876,28 @@ const App: React.FC = () => {
                   <p className="text-[9px] font-bold uppercase tracking-widest text-slate-400">Suporte</p>
                 </div>
                 <div className="rounded-2xl border border-fuchsia-100 bg-white p-4 text-center">
-                  <p className="text-xl font-black text-black">3</p>
-                  <p className="text-[9px] font-bold uppercase tracking-widest text-slate-400">Top Techs</p>
+                  <p className="text-xl font-black text-black">17+</p>
+                  <p className="text-[9px] font-bold uppercase tracking-widest text-slate-400">Anos de Mercado</p>
                 </div>
               </div>
               <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                <a href="#contato" className="inline-block px-10 py-4 bg-gradient-to-r from-[var(--brand-hot)] to-[var(--brand-wine)] text-white rounded-full transition-all duration-500 uppercase text-[10px] font-black tracking-[0.35em] shadow-2xl shadow-fuchsia-200 hover:scale-[1.02]">
-                  Solicitar Orçamento
+                <a href="#contato" onClick={() => trackInternalCta('hero', 'ver_disponibilidade_semana')} className="inline-block px-10 py-4 bg-gradient-to-r from-[var(--brand-hot)] to-[var(--brand-wine)] text-white rounded-full transition-all duration-500 uppercase text-[10px] font-black tracking-[0.35em] shadow-2xl shadow-fuchsia-200 hover:scale-[1.02]">
+                  Ver disponibilidade desta semana
                 </a>
                 <a
                   href={getDefaultWhatsAppLink(defaultWhatsappText)}
                   onClick={(e) => {
-                    e.preventDefault();
-                    openRotatingWhatsApp(defaultWhatsappText);
+                    handleWhatsAppCtaClick(e, defaultWhatsappText, 'hero', 'quero_proposta_whatsapp');
                   }}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-block px-10 py-4 border border-fuchsia-200 text-[var(--brand-wine)] rounded-full hover:bg-fuchsia-50 transition-colors uppercase text-[10px] font-bold tracking-[0.35em]"
                 >
-                  Fale no WhatsApp
+                  Quero minha proposta no WhatsApp
                 </a>
               </div>
               <p className="mt-5 text-[11px] font-semibold text-slate-500">
-                Locação para depilação a laser, rejuvenescimento e protocolos corporais. Vagas limitadas nesta semana.
+                Agenda de rotas limitada por região. Garanta seu equipamento para os próximos atendimentos.
               </p>
             </div>
 
@@ -869,6 +942,44 @@ const App: React.FC = () => {
         </div>
       </section>
 
+      <section id="beneficios" className="py-16 bg-[#fafafa] border-y border-slate-100">
+        <div className="container mx-auto px-6">
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-10">
+              <span className="text-[10px] font-bold text-[var(--brand-hot)] uppercase tracking-[0.5em]">Por Que Locar</span>
+              <h2 className="mt-4 text-4xl md:text-5xl font-black uppercase tracking-tighter text-black">Mais Resultado, Menos Risco</h2>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <article className="rounded-3xl border border-slate-100 bg-white p-8">
+                <h3 className="text-xl font-black text-black">Sem travar seu caixa</h3>
+                <p className="mt-3 text-slate-500">Evite alto investimento inicial e use seu capital para equipe, marketing e crescimento da clínica.</p>
+              </article>
+              <article className="rounded-3xl border border-slate-100 bg-white p-8">
+                <h3 className="text-xl font-black text-black">Retorno mais rápido</h3>
+                <p className="mt-3 text-slate-500">Ative protocolos de alto ticket sem esperar meses para recuperar o valor de compra do equipamento.</p>
+              </article>
+              <article className="rounded-3xl border border-slate-100 bg-white p-8">
+                <h3 className="text-xl font-black text-black">Risco operacional menor</h3>
+                <p className="mt-3 text-slate-500">Conte com suporte técnico, orientação de uso e acompanhamento para operar com segurança.</p>
+              </article>
+            </div>
+            <div className="mt-8 flex justify-center">
+              <a
+                href={getDefaultWhatsAppLink('Olá! Quero simular meu plano de locação com a Minas Laser.')}
+                onClick={(e) => {
+                  handleWhatsAppCtaClick(e, 'Olá! Quero simular meu plano de locação com a Minas Laser.', 'beneficios', 'simular_plano_locacao');
+                }}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-8 py-4 bg-gradient-to-r from-[var(--brand-hot)] to-[var(--brand-wine)] text-white rounded-full uppercase text-[10px] font-black tracking-[0.3em] text-center"
+              >
+                Simular meu plano de locação
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <section id="sobre" className="py-20 bg-white relative overflow-hidden">
         <div className="container mx-auto px-6">
           <div className="mb-16 text-center">
@@ -887,26 +998,28 @@ const App: React.FC = () => {
                 <p>Se você quer evoluir sua estrutura, fortalecer seu posicionamento e transformar tecnologia em faturamento, está no lugar certo.</p>
                 <p className="font-medium text-slate-700">Minas Laser Locações.<br />Tecnologia que gera resultado. Lucro que sustenta crescimento.</p>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
-                <div className="space-y-3">
-                  <div className="w-12 h-12 bg-fuchsia-50 rounded-2xl flex items-center justify-center text-[var(--brand-hot)]"><Clock className="w-5 h-5" /></div>
-                  <h4 className="text-[10px] font-black uppercase tracking-widest text-black">Suporte 24/7</h4>
-                  <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Assistência Total</p>
-                </div>
-                <div className="space-y-3">
-                  <div className="w-12 h-12 bg-pink-50 rounded-2xl flex items-center justify-center text-fuchsia-500"><Award className="w-5 h-5" /></div>
-                  <h4 className="text-[10px] font-black uppercase tracking-widest text-black">Certificados</h4>
-                  <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Foco ANVISA</p>
-                </div>
-                <div className="space-y-3">
-                  <div className="w-12 h-12 bg-slate-50 rounded-2xl flex items-center justify-center text-fuchsia-600"><Zap className="w-5 h-5" /></div>
-                  <h4 className="text-[10px] font-black uppercase tracking-widest text-black">Expertise</h4>
-                  <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">17 Anos de Mercado</p>
-                </div>
-              </div>
-              <a href="#contato" className="inline-flex items-center gap-6 text-[11px] font-black uppercase tracking-[0.5em] text-black hover:text-[var(--brand-wine)] transition-colors group">Fale com um Especialista <ArrowRight className="w-5 h-5 group-hover:translate-x-3 transition-transform text-[var(--brand-hot)]" /></a>
+              <a href="#contato" onClick={() => trackInternalCta('sobre', 'fale_com_especialista')} className="inline-flex items-center gap-6 text-[11px] font-black uppercase tracking-[0.5em] text-black hover:text-[var(--brand-wine)] transition-colors group">Fale com um Especialista <ArrowRight className="w-5 h-5 group-hover:translate-x-3 transition-transform text-[var(--brand-hot)]" /></a>
             </div>
             <div className="order-1 relative group animate-fadeIn">
+               <div className="relative z-20 -mt-3 md:-mt-5 mb-4 md:mb-6 w-[92%] mx-auto">
+                  <div className="grid grid-cols-3 gap-2 md:gap-4">
+                    <div className="bg-white rounded-2xl p-3 md:p-4 text-center border border-fuchsia-100 shadow-lg">
+                      <div className="w-9 h-9 md:w-10 md:h-10 mx-auto mb-2 bg-fuchsia-50 rounded-xl flex items-center justify-center text-[var(--brand-hot)]"><Clock className="w-4 h-4" /></div>
+                      <h4 className="text-[9px] md:text-[10px] font-black uppercase tracking-wider text-black">Suporte 24/7</h4>
+                      <p className="mt-1 text-[8px] md:text-[9px] text-slate-400 font-bold uppercase tracking-wide">Assistência Total</p>
+                    </div>
+                    <div className="bg-white rounded-2xl p-3 md:p-4 text-center border border-fuchsia-100 shadow-lg">
+                      <div className="w-9 h-9 md:w-10 md:h-10 mx-auto mb-2 bg-pink-50 rounded-xl flex items-center justify-center text-fuchsia-500"><Award className="w-4 h-4" /></div>
+                      <h4 className="text-[9px] md:text-[10px] font-black uppercase tracking-wider text-black">Certificados</h4>
+                      <p className="mt-1 text-[8px] md:text-[9px] text-slate-400 font-bold uppercase tracking-wide">Foco ANVISA</p>
+                    </div>
+                    <div className="bg-white rounded-2xl p-3 md:p-4 text-center border border-fuchsia-100 shadow-lg">
+                      <div className="w-9 h-9 md:w-10 md:h-10 mx-auto mb-2 bg-slate-50 rounded-xl flex items-center justify-center text-fuchsia-600"><Zap className="w-4 h-4" /></div>
+                      <h4 className="text-[9px] md:text-[10px] font-black uppercase tracking-wider text-black">Expertise</h4>
+                      <p className="mt-1 text-[8px] md:text-[9px] text-slate-400 font-bold uppercase tracking-wide">17 Anos de Mercado</p>
+                    </div>
+                  </div>
+               </div>
                <div className="absolute inset-0 bg-fuchsia-500/5 blur-[100px] rounded-full scale-75 group-hover:scale-100 transition-transform duration-1000"></div>
                <div className="relative z-10 p-8 bg-white border border-slate-100 rounded-[4rem] shadow-2xl overflow-hidden aspect-[4/5] lg:aspect-square flex items-center justify-center">
                   <CreativeTechAura />
@@ -918,7 +1031,6 @@ const App: React.FC = () => {
                      </div>
                   </div>
                </div>
-               <div className="absolute -top-10 -right-10 p-6 bg-white border border-slate-50 rounded-[2rem] shadow-xl animate-ui-float z-30"><ShieldCheck className="w-8 h-8 text-[var(--brand-wine)]" /></div>
             </div>
           </div>
         </div>
@@ -950,28 +1062,27 @@ const App: React.FC = () => {
         </div>
       </section>
 
-      <section className="py-14 bg-[#fafafa] border-y border-slate-100">
+      <section id="prova-social" className="py-14 bg-[#fafafa] border-y border-slate-100">
         <div className="container mx-auto px-6">
           <div className="max-w-5xl mx-auto rounded-[2.2rem] bg-white border border-fuchsia-100 p-8 md:p-10 shadow-sm">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
               <div>
                 <p className="text-[10px] font-bold uppercase tracking-[0.35em] text-[var(--brand-hot)]">Pronto para escalar?</p>
-                <h3 className="mt-2 text-2xl md:text-3xl font-black uppercase tracking-tight text-black">Peça uma proposta agora</h3>
-                <p className="mt-2 text-sm text-slate-500">Locação de equipamentos estéticos em Lavras e região, com suporte técnico e operação segura.</p>
+                <h3 className="mt-2 text-2xl md:text-3xl font-black uppercase tracking-tight text-black">Clínicas já usam para vender mais sem comprar equipamento</h3>
+                <p className="mt-2 text-sm text-slate-500">Mais autoridade, protocolos premium e previsibilidade financeira com acompanhamento da Minas Laser.</p>
               </div>
               <div className="flex flex-col sm:flex-row gap-3">
-                <a href="#contato" className="px-7 py-4 bg-gradient-to-r from-[var(--brand-hot)] to-[var(--brand-wine)] text-white rounded-full uppercase text-[10px] font-black tracking-[0.3em] text-center">Solicite Orçamento</a>
+                <a href="#contato" onClick={() => trackInternalCta('prova_social', 'solicite_orcamento')} className="px-7 py-4 bg-gradient-to-r from-[var(--brand-hot)] to-[var(--brand-wine)] text-white rounded-full uppercase text-[10px] font-black tracking-[0.3em] text-center">Solicite Orçamento</a>
                 <a
                   href={getDefaultWhatsAppLink(defaultWhatsappText)}
                   onClick={(e) => {
-                    e.preventDefault();
-                    openRotatingWhatsApp(defaultWhatsappText);
+                    handleWhatsAppCtaClick(e, defaultWhatsappText, 'prova_social', 'falar_especialista_agora');
                   }}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="px-7 py-4 border border-fuchsia-200 text-[var(--brand-wine)] rounded-full uppercase text-[10px] font-black tracking-[0.3em] text-center hover:bg-fuchsia-50 transition-colors"
                 >
-                  Fale no WhatsApp
+                  Falar com especialista agora
                 </a>
               </div>
             </div>
@@ -993,35 +1104,35 @@ const App: React.FC = () => {
                 <p className="text-[9px] font-bold uppercase tracking-[0.3em] text-[var(--brand-hot)]">Locação Laser Estética</p>
                 <h3 className="mt-3 text-2xl font-black tracking-tight text-black">Aluguel de Laser para Remoção de Pelos</h3>
                 <p className="mt-3 text-slate-500 leading-relaxed">Equipamentos como Soprano Ice Platinum e LightSheer para clínicas que precisam de tecnologia premium, segurança e previsibilidade operacional.</p>
-                <a href="#contato" className="mt-5 inline-block text-[11px] font-black uppercase tracking-[0.25em] text-[var(--brand-wine)] hover:text-[var(--brand-hot)] transition-colors">Solicitar Proposta</a>
+                <a href="#contato" onClick={() => trackInternalCta('intencoes_seo', 'solicitar_proposta_depilacao')} className="mt-5 inline-block text-[11px] font-black uppercase tracking-[0.25em] text-[var(--brand-wine)] hover:text-[var(--brand-hot)] transition-colors">Solicitar Proposta</a>
               </article>
 
               <article id="ultraformer-mpt" className="rounded-3xl border border-slate-100 bg-[#fcfcfc] p-8">
                 <p className="text-[9px] font-bold uppercase tracking-[0.3em] text-[var(--brand-hot)]">Lifting e Ultrassom</p>
                 <h3 className="mt-3 text-2xl font-black tracking-tight text-black">Locação de Ultraformer MPT</h3>
                 <p className="mt-3 text-slate-500 leading-relaxed">Aluguel de Ultraformer MPT para protocolos faciais e corporais com alto valor agregado, suporte técnico e treinamento para sua equipe.</p>
-                <a href="#contato" className="mt-5 inline-block text-[11px] font-black uppercase tracking-[0.25em] text-[var(--brand-wine)] hover:text-[var(--brand-hot)] transition-colors">Peça um Orçamento</a>
+                <a href="#contato" onClick={() => trackInternalCta('intencoes_seo', 'pedir_orcamento_ultraformer')} className="mt-5 inline-block text-[11px] font-black uppercase tracking-[0.25em] text-[var(--brand-wine)] hover:text-[var(--brand-hot)] transition-colors">Peça um Orçamento</a>
               </article>
 
               <article id="lavieen-locacao" className="rounded-3xl border border-slate-100 bg-[#fcfcfc] p-8">
                 <p className="text-[9px] font-bold uppercase tracking-[0.3em] text-[var(--brand-hot)]">Rejuvenescimento</p>
                 <h3 className="mt-3 text-2xl font-black tracking-tight text-black">Locação de Lavieen para Clínicas</h3>
                 <p className="mt-3 text-slate-500 leading-relaxed">Locação do Lavieen para protocolos de qualidade da pele, manchas e poros com operação segura e suporte próximo para resultados consistentes.</p>
-                <a href="#contato" className="mt-5 inline-block text-[11px] font-black uppercase tracking-[0.25em] text-[var(--brand-wine)] hover:text-[var(--brand-hot)] transition-colors">Falar com Especialista</a>
+                <a href="#contato" onClick={() => trackInternalCta('intencoes_seo', 'falar_especialista_lavieen')} className="mt-5 inline-block text-[11px] font-black uppercase tracking-[0.25em] text-[var(--brand-wine)] hover:text-[var(--brand-hot)] transition-colors">Falar com Especialista</a>
               </article>
 
               <article id="locacao-minas-gerais" className="rounded-3xl border border-slate-100 bg-[#fcfcfc] p-8">
                 <p className="text-[9px] font-bold uppercase tracking-[0.3em] text-[var(--brand-hot)]">Atuação Regional</p>
                 <h3 className="mt-3 text-2xl font-black tracking-tight text-black">Locação de Equipamentos Estéticos em Minas Gerais</h3>
                 <p className="mt-3 text-slate-500 leading-relaxed">Atendemos Lavras e diversas cidades de Minas Gerais com logística planejada, curadoria de equipamentos e acompanhamento técnico.</p>
-                <a href="#contato" className="mt-5 inline-block text-[11px] font-black uppercase tracking-[0.25em] text-[var(--brand-wine)] hover:text-[var(--brand-hot)] transition-colors">Solicite Atendimento</a>
+                <a href="#contato" onClick={() => trackInternalCta('intencoes_seo', 'solicite_atendimento_regional')} className="mt-5 inline-block text-[11px] font-black uppercase tracking-[0.25em] text-[var(--brand-wine)] hover:text-[var(--brand-hot)] transition-colors">Solicite Atendimento</a>
               </article>
             </div>
           </div>
         </div>
       </section>
 
-      <section id="cursos" className="py-20 bg-white relative overflow-hidden">
+      <section id="cursos" className="hidden py-20 bg-white relative overflow-hidden">
         <div className="container mx-auto px-6">
           <div className="flex flex-col items-center mb-16 text-center">
              <span className="text-[10px] font-bold text-[var(--brand-wine)] uppercase tracking-[0.5em] mb-4">Educational Hub</span>
@@ -1049,7 +1160,7 @@ const App: React.FC = () => {
         </div>
       </section>
 
-      <section id="blog" className="py-20 bg-[#fafafa]">
+      <section id="blog" className="hidden py-20 bg-[#fafafa]">
         <div className="container mx-auto px-6">
           <div className="flex flex-col items-center mb-16 text-center">
              <span className="text-[10px] font-bold text-[var(--brand-hot)] uppercase tracking-[0.5em] mb-4">Editorial de Inovação</span>
@@ -1094,12 +1205,12 @@ const App: React.FC = () => {
         </div>
       </section>
 
-      <section className="py-16 bg-white">
+      <section id="seguranca" className="py-16 bg-white">
         <div className="container mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-20 text-center">
            <div className="space-y-6">
-             <TrendingUp className="w-7 h-7 text-[var(--brand-hot)] mx-auto opacity-50" />
-             <h4 className="text-5xl font-black tracking-tighter text-black">A+</h4>
-             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.5em]">Grade Rental</p>
+              <TrendingUp className="w-7 h-7 text-[var(--brand-hot)] mx-auto opacity-50" />
+             <h4 className="text-5xl font-black tracking-tighter text-black">17+</h4>
+             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.5em]">Anos de Autoridade</p>
            </div>
            <div className="space-y-6">
              <ShieldCheck className="w-7 h-7 text-[var(--brand-wine)] mx-auto opacity-50" />
@@ -1108,8 +1219,8 @@ const App: React.FC = () => {
            </div>
            <div className="space-y-6">
              <Cpu className="w-7 h-7 text-[var(--brand-hot)] mx-auto opacity-50" />
-             <h4 className="text-5xl font-black tracking-tighter text-black">IoT</h4>
-             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.5em]">Tecnologia Laser</p>
+             <h4 className="text-5xl font-black tracking-tighter text-black">MG</h4>
+             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.5em]">Atendimento Regional</p>
            </div>
         </div>
       </section>
@@ -1119,25 +1230,28 @@ const App: React.FC = () => {
           <div className="max-w-5xl mx-auto glass-card rounded-[4rem] p-12 md:p-20 border-fuchsia-100">
              <div className="grid grid-cols-1 lg:grid-cols-2 gap-24">
                <div className="flex flex-col justify-center">
-                 <h2 className="text-5xl md:text-6xl font-black mb-10 uppercase tracking-tighter leading-none text-black">Impulsione sua <br/><span className="bg-gradient-to-r from-[var(--brand-hot)] to-[var(--brand-wine)] bg-clip-text text-transparent">Clínica.</span></h2>
-                 <p className="text-slate-500 text-base font-light leading-relaxed mb-4">Agende uma demonstração ou solicite cotação para o próximo ciclo de locação da sua clínica.</p>
-                 <p className="text-slate-500 text-sm font-medium leading-relaxed mb-12">Atendimento em Lavras, MG e demais regiões de Minas Gerais.</p>
+                 <h2 className="text-5xl md:text-6xl font-black mb-10 uppercase tracking-tighter leading-none text-black">Comece seu próximo ciclo <br/><span className="bg-gradient-to-r from-[var(--brand-hot)] to-[var(--brand-wine)] bg-clip-text text-transparent">com agenda cheia.</span></h2>
+                 <p className="text-slate-500 text-base font-light leading-relaxed mb-4">Fale com nossa equipe no WhatsApp e receba a sugestão de equipamento ideal para o seu perfil de clínica.</p>
+                 <p className="text-slate-500 text-sm font-medium leading-relaxed mb-12">Resposta rápida, suporte técnico e operação segura em Lavras e demais regiões de Minas Gerais.</p>
+                 <div className="mb-8 rounded-2xl border border-fuchsia-100 bg-white/80 p-5">
+                   <p className="text-[10px] font-black uppercase tracking-[0.35em] text-[var(--brand-hot)]">Oferta da Semana</p>
+                   <p className="mt-2 text-sm text-slate-600">Agenda de locação com vagas limitadas por rota regional. Antecipe sua reserva para não perder o próximo ciclo.</p>
+                 </div>
                  <div className="flex flex-col gap-4">
                    <a href="https://www.instagram.com/minaslaserlocacoes/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-6 text-[11px] font-bold uppercase tracking-widest text-[var(--brand-wine)] hover:text-[var(--brand-hot)] transition-colors"><Send className="w-5 h-5 text-[var(--brand-hot)]" /> <span>@minaslaserlocacoes</span></a>
-                   <a
-                     href={getDefaultWhatsAppLink(defaultWhatsappText)}
-                     onClick={(e) => {
-                       e.preventDefault();
-                       openRotatingWhatsApp(defaultWhatsappText);
-                     }}
+                    <a
+                      href={getDefaultWhatsAppLink(defaultWhatsappText)}
+                      onClick={(e) => {
+                        handleWhatsAppCtaClick(e, defaultWhatsappText, 'contato', 'falar_whatsapp_agora');
+                      }}
                      target="_blank"
                      rel="noopener noreferrer"
                      className="flex items-center gap-6 text-[11px] font-bold uppercase tracking-widest text-[var(--brand-wine)] hover:text-[var(--brand-hot)] transition-colors"
                    >
-                     <PlayCircle className="w-5 h-5 text-[var(--brand-hot)]" /> <span>(35) 99994-8797</span>
-                   </a>
-                 </div>
-               </div>
+                      <PlayCircle className="w-5 h-5 text-[var(--brand-hot)]" /> <span>Falar no WhatsApp agora</span>
+                    </a>
+                  </div>
+                </div>
                <div className="bg-white/50 p-8 rounded-[2rem] border border-fuchsia-50 shadow-inner">
                  {formState === 'success' ? (
                    <div className="text-center py-16 animate-fadeIn">
@@ -1163,21 +1277,20 @@ const App: React.FC = () => {
                        placeholder="WHATSAPP (35) 99999-9999"
                      />
                      {formError && <p className="text-xs font-semibold text-red-500">{formError}</p>}
-                     <button type="submit" disabled={formState === 'submitting'} className="w-full py-7 bg-gradient-to-r from-black to-slate-800 text-white font-black uppercase tracking-[0.5em] text-[11px] hover:from-[var(--brand-hot)] hover:to-[var(--brand-wine)] transition-all shadow-2xl hover:scale-[1.02] active:scale-[0.98]">{formState === 'submitting' ? <Loader2 className="w-5 h-5 animate-spin mx-auto" /> : 'Confirmar Interesse'}</button>
-                     <a
-                       href={getDefaultWhatsAppLink(defaultWhatsappText)}
-                       onClick={(e) => {
-                         e.preventDefault();
-                         openRotatingWhatsApp(defaultWhatsappText);
-                       }}
+                     <button type="submit" disabled={formState === 'submitting'} className="w-full py-7 bg-gradient-to-r from-black to-slate-800 text-white font-black uppercase tracking-[0.5em] text-[11px] hover:from-[var(--brand-hot)] hover:to-[var(--brand-wine)] transition-all shadow-2xl hover:scale-[1.02] active:scale-[0.98]">{formState === 'submitting' ? <Loader2 className="w-5 h-5 animate-spin mx-auto" /> : 'Quero atendimento prioritário'}</button>
+                      <a
+                        href={getDefaultWhatsAppLink(defaultWhatsappText)}
+                        onClick={(e) => {
+                          handleWhatsAppCtaClick(e, defaultWhatsappText, 'contato', 'reservar_equipamento_whatsapp');
+                        }}
                        target="_blank"
                        rel="noopener noreferrer"
                        className="w-full py-4 mt-2 border border-fuchsia-200 text-[var(--brand-wine)] font-black uppercase tracking-[0.35em] text-[10px] text-center rounded-xl hover:bg-fuchsia-50 transition-colors block"
                      >
-                       Falar no WhatsApp
-                     </a>
-                   </form>
-                 )}
+                        Reservar equipamento pelo WhatsApp
+                      </a>
+                    </form>
+                  )}
                </div>
              </div>
           </div>
@@ -1207,8 +1320,7 @@ const App: React.FC = () => {
             <a
               href={getDefaultWhatsAppLink(defaultWhatsappText)}
               onClick={(e) => {
-                e.preventDefault();
-                openRotatingWhatsApp(defaultWhatsappText);
+                handleWhatsAppCtaClick(e, defaultWhatsappText, 'footer', 'wa_footer');
               }}
               target="_blank"
               rel="noopener noreferrer"
@@ -1224,15 +1336,14 @@ const App: React.FC = () => {
       <a
         href={getDefaultWhatsAppLink(defaultWhatsappText)}
         onClick={(e) => {
-          e.preventDefault();
-          openRotatingWhatsApp(defaultWhatsappText);
+          handleWhatsAppCtaClick(e, defaultWhatsappText, 'botao_fixo', 'wa_fixo_resposta_rapida');
         }}
         target="_blank"
         rel="noopener noreferrer"
         className="fixed bottom-5 right-5 z-[120] px-5 py-3 rounded-full bg-gradient-to-r from-[var(--brand-hot)] to-[var(--brand-wine)] text-white text-[10px] font-black uppercase tracking-[0.28em] shadow-2xl shadow-fuchsia-300/40 hover:scale-[1.03] transition-transform"
         aria-label="Falar no WhatsApp"
       >
-        WhatsApp
+        WhatsApp | Resposta Rápida
       </a>
 
       {selectedEquipment && <EquipmentModal equipment={selectedEquipment} onClose={() => setSelectedEquipment(null)} />}
