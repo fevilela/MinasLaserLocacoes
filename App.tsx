@@ -26,6 +26,8 @@ import {
 } from 'lucide-react';
 import { Equipment, BlogPost, Course } from './types';
 
+const imageUrl = (file: string) => `${import.meta.env.BASE_URL}images/${file}`;
+
 const WHATSAPP_NUMBERS = (((import.meta as any).env.VITE_WHATSAPP_NUMBERS as string) || '5535999948797')
   .split(',')
   .map((n) => n.trim())
@@ -310,7 +312,7 @@ const App: React.FC = () => {
       title: 'LAVIEEN',
       description: 'O laser Lavieen utiliza feixes de luz concentrados para direcionar áreas específicas da pele, estimulando a regeneração celular e promovendo a produção de colágeno. Seu resultado gera uma renovação tecidual, levando à atenuação de rugas, remoção de pigmentações excessivas, diminuição de poros e uniformização da pele.',
       highlight: 'BB Laser & Skin Quality',
-      image: '/images/Laser%20Lavieen.png', // Placeholder representativo
+      image: imageUrl('Laser%20Lavieen.png'), // Placeholder representativo
       category: 'Laser & Rejuvenescimento',
       specs: [
         { label: 'Indicação', value: 'Manchas, Poros e Rugas' },
@@ -323,7 +325,7 @@ const App: React.FC = () => {
       title: 'ULTRAFORMER MPT',
       description: 'O Ultraformer MPT (Micro Point HIFU Technology) combina ultrassom focalizado e microfocalizado para oferecer resultados mais precisos e eficazes. Ele usa ondas de ultrassom de alta intensidade para estimular a produção de colágeno nas camadas mais profundas da pele. A tecnologia MPT permite uma cobertura mais completa e uma ação mais precisa nas áreas tratadas.',
       highlight: 'HIFU de Última Geração',
-      image: '/images/Ultraformer%20MPT.png', 
+      image: imageUrl('Ultraformer%20MPT.png'), 
       category: 'Lifting & Ultrassom',
       specs: [
         { label: 'Disparos', value: 'Mínimo 1800 por locação' },
@@ -336,7 +338,7 @@ const App: React.FC = () => {
       title: 'SOPRANO ICE PLATINUM',
       description: 'O Soprano ICE Platinum é uma revolução no mercado de depilação. Ele emprega os 3 feixes de laser que estão sendo utilizados no mercado para a depilação. Todos os equipamentos no mercado utilizam um feixe único (um comprimento de onda único, seja Alexandrita, Diodo ou Nd:YAG).',
       highlight: 'Depilação de Tripla Ação',
-      image: '/images/Soprano%20Ice%20Platinum.png',
+      image: imageUrl('Soprano%20Ice%20Platinum.png'),
       category: 'Depilação',
       specs: [
         { label: 'Tecnologia', value: '3 Comprimentos de Onda' },
@@ -349,7 +351,7 @@ const App: React.FC = () => {
       title: 'INKIE LASER',
       description: 'O INKIE é o laser mais eficiente e eficaz na remoção de tatuagem e lesões pigmentadas para clínicas de ponta. Com o Inkie, você tem o poder de oferecer e atender uma grande demanda por tratamentos atuais com segurança e resultados incomparáveis.',
       highlight: 'Remoção de Tatuagem Premium',
-      image: '/images/Inkie%20Laser.png',
+      image: imageUrl('Inkie%20Laser.png'),
       category: 'Remoção de Tatuagem',
       specs: [
         { label: 'Foco', value: 'Tatuagens e Lesões Pigmentadas' },
@@ -362,7 +364,7 @@ const App: React.FC = () => {
       title: 'LIGHTSHEER LIGHT',
       description: 'Com um design totalmente inovador e moderno, o LightSheer Desire oferece um tratamento ainda mais rápido, eficaz e confortável para a redução permanente de pelos. Possui a tecnologia mais avançada do mundo para remoção de pelos, seu laser de diodo "padrão ouro" com o handpiece Light (9 x 9 mm). Com a nova tecnologia integrada HIT, oferece alta velocidade tanto em áreas grandes como pequenas. Tudo isso com conforto e segurança para o paciente.',
       highlight: 'Padrão Ouro em Diodo',
-      image: '/images/Lightsheer%20Light.png',
+      image: imageUrl('Lightsheer%20Light.png'),
       category: 'Depilação',
       specs: [
         { label: 'Tecnologia', value: 'HIT Integrada' },
@@ -375,7 +377,7 @@ const App: React.FC = () => {
       title: 'ASGARD CRIOLIPÓLISE',
       description: 'O Asgard VC10 é uma plataforma desenvolvida pela Adoxy, a única do mercado a trabalhar com quatro manípulos, otimizando os protocolos de atendimento. Com sistemas independentes, uma bomba de vácuo para cada manípulo e células de congelamento de alta capacidade, a plataforma trabalha em alta performance, apresentando resultados comprovadamente superiores num menor tempo de aplicação.',
       highlight: '4 Manípulos Simultâneos',
-      image: '/images/Asgard%20Criolip%C3%B3lise.png',
+      image: imageUrl('Asgard%20Criolip%C3%B3lise.png'),
       category: 'Corporal & Criolipólise',
       specs: [
         { label: 'Plataforma', value: 'Adoxy VC10' },
@@ -388,7 +390,7 @@ const App: React.FC = () => {
       title: 'POLARYS PLAXX',
       description: 'O Polarys Plaxx é um aparelho que veio para revolucionar seus atendimentos. Com 4 opções de modelos de aplicadores de tamanhos diferentes, o Polarys Plaxx conta com exclusivo aplicador para terapia combinada de criolipólise + eletroestimulação no mesmo aplicador.',
       highlight: 'Crio + Eletroestimulação',
-      image: '/images/Polarys%20Plaxx.png',
+      image: imageUrl('Polarys%20Plaxx.png'),
       category: 'Corporal & Criolipólise',
       specs: [
         { label: 'Diferencial', value: 'Terapia Combinada' },
@@ -401,7 +403,7 @@ const App: React.FC = () => {
       title: 'REDUX',
       description: 'O equipamento que utiliza o resfriamento controlado para congelar a gordura sob a pele e eliminá-la. É um tratamento para redução de gordura localizada, com base na Criolipólise – técnica que utiliza uma nova tecnologia de resfriamento intenso e localizado, no qual as células de gordura são eliminadas com o frio, sem causar danos aos tecidos adjacentes.',
       highlight: 'Resfriamento Controlado',
-      image: '/images/Redux.png',
+      image: imageUrl('Redux.png'),
       category: 'Corporal & Criolipólise',
       specs: [
         { label: 'Tecnologia', value: 'Crio-Redução Focalizada' },
@@ -414,7 +416,7 @@ const App: React.FC = () => {
       title: 'LUZ PULSADA HTM',
       description: 'O Light Pulse® é um aparelho de Luz Intensa Pulsada, desenvolvido para trabalhar com um aplicador de filtro óptico intercambiável e/ou filtro óptico fixo. Conta ainda com display touch screen de 8", com interface amigável e que permite a completa visualização dos parâmetros aplicados, proporcionando maior precisão e manutenção dos padrões de tratamentos pré-estabelecidos.',
       highlight: 'Luz Intensa Pulsada Flex',
-      image: '/images/Luz%20Pulsada%20HTM.png',
+      image: imageUrl('Luz%20Pulsada%20HTM.png'),
       category: 'Laser & Rejuvenescimento',
       specs: [
         { label: 'Interface', value: 'Touch Screen 8"' },
@@ -427,7 +429,7 @@ const App: React.FC = () => {
       title: 'HYBRIUS',
       description: 'O Hybrius é o único aparelho no mundo que reúne 3 terapias: Radiofrequência, Ultracavitação e Lipolep. Podem ser utilizadas de forma simultânea ou separadamente. Tratamentos com o Hybrius: celulite, flacidez, gordura localizada, estrias, pré-operatório, pós-operatório, fibrose e equimose.',
       highlight: 'Terapia Híbrida 3 em 1',
-      image: '/images/Hybrius.png',
+      image: imageUrl('Hybrius.png'),
       category: 'Corporal & Criolipólise',
       specs: [
         { label: 'Terapias', value: 'RF + Cavitação + Lipolep' },
@@ -440,7 +442,7 @@ const App: React.FC = () => {
       title: 'CRIOFREQUÊNCIA BHS',
       description: 'Criofrequência é uma terapia ideal e única que age através da sinergia do frio que vai até -10 graus e 1.050 watts de potência de onda eletromagnética (Radiofrequência). O encontro das duas temperaturas além de garantir a segurança do cliente, produz milhões de choques térmicos aos tecidos, gerando um terceiro efeito fisiológico, desestabilizando o metabolismo local. Tamanha energia mobiliza não somente o colágeno, mas também a gordura, sendo indicado para flacidez tissular (facial e corporal) e gordura localizada.',
       highlight: 'Choque Térmico Profundo',
-      image: '/images/Criofrequ%C3%AAncia.png',
+      image: imageUrl('Criofrequ%C3%AAncia.png'),
       category: 'Corporal & Criolipólise',
       specs: [
         { label: 'Frio', value: 'Até -10 Graus' },
@@ -453,7 +455,7 @@ const App: React.FC = () => {
       title: 'IMUSCLE BUILDING',
       description: 'O iMuscle Building é um sistema de estimulação muscular que utiliza tecnologia de campo eletromagnético de alta intensidade, com protocolos inteligentes pré-programados de HIIT (High Intensity Interval Training), Hipertrofia, Força e Combinações de Treinos. Com ele, seus clientes terão resultados de alta performance em um período de um a dois meses de tratamento, incluindo aumento da espessura dos músculos e redução da camada de gordura subcutânea.',
       highlight: 'Performance Muscular HIIT',
-      image: '/images/Imuscle%20Building.png',
+      image: imageUrl('Imuscle%20Building.png'),
       category: 'Performance Muscular',
       specs: [
         { label: 'Tecnologia', value: 'Campo Eletromagnético HI-EMT' },
@@ -466,7 +468,7 @@ const App: React.FC = () => {
       title: 'NEOXEL CO2',
       description: 'O Neoxel é um laser de CO2 fracionado de alta performance, ideal para rejuvenescimento profundo, tratamento de cicatrizes e estrias. Sua tecnologia permite uma ablação precisa da pele, estimulando intensamente a produção de colágeno e promovendo uma renovação celular completa com resultados visíveis desde a primeira sessão.',
       highlight: 'Rejuvenescimento & Cicatrizes',
-      image: '/images/Neoxel%20CO2.png',
+      image: imageUrl('Neoxel%20CO2.png'),
       category: 'Laser & Rejuvenescimento',
       specs: [
         { label: 'Tecnologia', value: 'Laser CO2 Fracionado' },
@@ -479,7 +481,7 @@ const App: React.FC = () => {
       title: 'RESFRIADOR FREDDO',
       description: 'O Freddo é um sistema de resfriamento de ar de alta potência projetado para proporcionar máximo conforto e segurança durante procedimentos a laser e dermatológicos. Ele protege a epiderme, reduz a dor e minimiza o risco de lesões térmicas, permitindo o uso de maiores energias para resultados mais eficazes.',
       highlight: 'Máximo Conforto Térmico',
-      image: '/images/Resfriador%20Freddo.png',
+      image: imageUrl('Resfriador%20Freddo.png'),
       category: 'Acessórios & Conforto',
       specs: [
         { label: 'Função', value: 'Resfriamento Cutâneo Localizado' },
@@ -492,7 +494,7 @@ const App: React.FC = () => {
       title: 'ILIPO',
       description: 'O ILipo é uma plataforma para tratamentos corporais não invasivos com foco em redução de medidas e melhora do contorno corporal, com protocolos rápidos e seguros para a rotina clínica.',
       highlight: 'Contorno Corporal Não Invasivo',
-      image: '/images/i-lipo.png',
+      image: imageUrl('i-lipo.png'),
       category: 'Corporal & Criolipólise',
       specs: [
         { label: 'Aplicação', value: 'Redução de Medidas' },
@@ -510,7 +512,7 @@ const App: React.FC = () => {
       duration: 'Curso Completo',
       category: 'Operacional',
       instructor: 'Equipe Técnica Minas Laser',
-      image: '/images/Inkie%20Laser%20curso.jpg',
+      image: imageUrl('Inkie%20Laser%20curso.jpg'),
       modules: ['Teoria Completa', 'Prática em Pacientes Modelo', 'Certificado', 'Material Didático', 'Suporte pós Curso']
     },
     {
@@ -520,7 +522,7 @@ const App: React.FC = () => {
       duration: 'Curso Completo',
       category: 'Operacional',
       instructor: 'Equipe Técnica Minas Laser',
-      image: '/images/Laser%20Lavieen%20curso.png',
+      image: imageUrl('Laser%20Lavieen%20curso.png'),
       modules: ['Teoria Completa', 'Prática em Pacientes Modelo', 'Certificado', 'Material Didático', 'Suporte pós Curso']
     },
     {
@@ -530,7 +532,7 @@ const App: React.FC = () => {
       duration: 'Curso Completo',
       category: 'Operacional',
       instructor: 'Equipe Técnica Minas Laser',
-      image: '/images/LIGHT%20SHEER%20E.jpg',
+      image: imageUrl('LIGHT%20SHEER%20E.jpg'),
       modules: ['Teoria Completa', 'Prática em Pacientes Modelo', 'Certificado', 'Material Didático', 'Suporte pós Curso']
     },
     {
@@ -540,7 +542,7 @@ const App: React.FC = () => {
       duration: 'Curso Completo',
       category: 'Operacional',
       instructor: 'Equipe Técnica Minas Laser',
-      image: '/images/Ultraforme%20MPT.png',
+      image: imageUrl('Ultraforme%20MPT.png'),
       modules: ['Teoria Completa', 'Prática em Pacientes Modelo', 'Certificado', 'Material Didático', 'Suporte pós Curso']
     }
   ];
@@ -716,7 +718,7 @@ const App: React.FC = () => {
             <a href="#equipamentos" className="hover:text-black transition-colors">Portfólio</a>
           </nav>
           <div className="absolute left-1/2 -translate-x-1/2 flex flex-col items-center">
-             <img src="/images/Logo.png" alt="Minas Laser" className={`transition-all duration-700 object-contain drop-shadow-sm ${isScrolled ? 'h-8 md:h-9' : 'h-10 md:h-12'}`} onError={(e) => { e.currentTarget.src = "https://i.ibb.co/LdfV8R9/logo-minas.png"; }} />
+             <img src={imageUrl('Logo.png')} alt="Minas Laser" className={`transition-all duration-700 object-contain drop-shadow-sm ${isScrolled ? 'h-8 md:h-9' : 'h-10 md:h-12'}`} onError={(e) => { e.currentTarget.src = "https://i.ibb.co/LdfV8R9/logo-minas.png"; }} />
           </div>
           <nav className="hidden lg:flex items-center gap-10 text-[9px] font-bold uppercase tracking-[0.4em] text-slate-400">
             <a href="#cursos" className="hover:text-black transition-colors">Cursos</a>
@@ -868,7 +870,7 @@ const App: React.FC = () => {
                <div className="absolute inset-0 bg-fuchsia-500/5 blur-[100px] rounded-full scale-75 group-hover:scale-100 transition-transform duration-1000"></div>
                <div className="relative z-10 p-8 bg-white border border-slate-100 rounded-[4rem] shadow-2xl overflow-hidden aspect-[4/5] lg:aspect-square flex items-center justify-center">
                   <CreativeTechAura />
-                  <img src="/images/sobre.png" alt="Nossa História" className="absolute inset-0 w-full h-full object-cover opacity-100 transition-opacity duration-700" />
+                  <img src={imageUrl('sobre.png')} alt="Nossa História" className="absolute inset-0 w-full h-full object-cover opacity-100 transition-opacity duration-700" />
                   <div className="absolute bottom-6 left-6 md:bottom-8 md:left-8 z-20">
                      <div className="px-8 py-6 md:px-10 md:py-8 bg-white/95 border border-fuchsia-50 rounded-[2rem] shadow-xl text-center">
                         <h3 className="text-4xl font-black bg-gradient-to-r from-[var(--brand-hot)] to-[var(--brand-wine)] bg-clip-text text-transparent mb-1">16+</h3>
@@ -1053,7 +1055,7 @@ const App: React.FC = () => {
       <footer className="py-16 bg-white border-t border-slate-50">
         <div className="container mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-16">
           <div className="flex flex-col items-center md:items-start">
-             <img src="/images/Logo.png" alt="Minas Laser Logo" className="h-16 md:h-9 object-contain" onError={(e) => { e.currentTarget.src = "https://i.ibb.co/LdfV8R9/logo-minas.png"; }} />
+             <img src={imageUrl('Logo.png')} alt="Minas Laser Logo" className="h-16 md:h-9 object-contain" onError={(e) => { e.currentTarget.src = "https://i.ibb.co/LdfV8R9/logo-minas.png"; }} />
              <div className="w-12 h-[3px] bg-gradient-to-r from-[var(--brand-hot)] to-[var(--brand-wine)] mt-4"></div>
           </div>
           <div className="text-center">
