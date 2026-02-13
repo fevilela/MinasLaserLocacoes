@@ -40,3 +40,4 @@ try {
 } catch (err) {
   showStartupError('bootstrap', err);
 }
+
