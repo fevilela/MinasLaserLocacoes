@@ -794,32 +794,32 @@ const App: React.FC = () => {
                 <div key={`img-wrap-${currentIdx}`} className="w-full h-full flex items-center justify-center relative z-10 animate-impact">
                   <img src={currentEq.image} alt={currentEq.title} className="max-w-[85%] max-h-[85%] object-contain drop-shadow-2xl animate-bounce-slow" />
                 </div>
-                <div className="hidden md:block absolute inset-0 z-20 pointer-events-none">
-                  <div className="absolute top-[36%] left-[2%] -translate-y-1/2">
-                    <div className="px-4 py-3 rounded-2xl bg-white/92 border border-fuchsia-100 shadow-xl backdrop-blur-sm w-[180px]">
-                      <p className="text-[8px] font-black uppercase tracking-[0.25em] text-slate-400 mb-1">Equipamento</p>
-                      <p className="text-[11px] font-black uppercase tracking-wider text-black">{currentEq.title}</p>
+                <div className="absolute inset-0 z-20 pointer-events-none">
+                  <div className="absolute top-[34%] left-[1%] md:top-[36%] md:left-[2%] -translate-y-1/2">
+                    <div className="px-2 py-2 md:px-4 md:py-3 rounded-xl md:rounded-2xl bg-white/92 border border-fuchsia-100 shadow-xl backdrop-blur-sm w-[128px] md:w-[180px]">
+                      <p className="text-[7px] md:text-[8px] font-black uppercase tracking-[0.2em] md:tracking-[0.25em] text-slate-400 mb-1">Equipamento</p>
+                      <p className="text-[8px] md:text-[11px] font-black uppercase tracking-wide md:tracking-wider text-black line-clamp-2">{currentEq.title}</p>
                     </div>
-                    <div className="absolute right-[-34px] top-1/2 -translate-y-1/2 w-8 h-[2px] bg-gradient-to-r from-[var(--brand-wine)] to-transparent"></div>
-                    <div className="absolute right-[-38px] top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-[var(--brand-hot)]"></div>
+                    <div className="absolute right-[-18px] md:right-[-34px] top-1/2 -translate-y-1/2 w-4 md:w-8 h-[2px] bg-gradient-to-r from-[var(--brand-wine)] to-transparent"></div>
+                    <div className="absolute right-[-21px] md:right-[-38px] top-1/2 -translate-y-1/2 w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-[var(--brand-hot)]"></div>
                   </div>
 
-                  <div className="absolute top-[45%] right-[2%] -translate-y-1/2">
-                    <div className="px-4 py-3 rounded-2xl bg-white/92 border border-fuchsia-100 shadow-xl backdrop-blur-sm w-[180px]">
-                      <p className="text-[8px] font-black uppercase tracking-[0.25em] text-slate-400 mb-1">Funcionalidade</p>
-                      <p className="text-[11px] font-black uppercase tracking-wider text-black">{currentEq.highlight}</p>
+                  <div className="absolute top-[43%] right-[1%] md:top-[45%] md:right-[2%] -translate-y-1/2">
+                    <div className="px-2 py-2 md:px-4 md:py-3 rounded-xl md:rounded-2xl bg-white/92 border border-fuchsia-100 shadow-xl backdrop-blur-sm w-[128px] md:w-[180px]">
+                      <p className="text-[7px] md:text-[8px] font-black uppercase tracking-[0.2em] md:tracking-[0.25em] text-slate-400 mb-1">Funcionalidade</p>
+                      <p className="text-[8px] md:text-[11px] font-black uppercase tracking-wide md:tracking-wider text-black line-clamp-2">{currentEq.highlight}</p>
                     </div>
-                    <div className="absolute left-[-34px] top-1/2 -translate-y-1/2 w-8 h-[2px] bg-gradient-to-l from-[var(--brand-hot)] to-transparent"></div>
-                    <div className="absolute left-[-38px] top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-[var(--brand-wine)]"></div>
+                    <div className="absolute left-[-18px] md:left-[-34px] top-1/2 -translate-y-1/2 w-4 md:w-8 h-[2px] bg-gradient-to-l from-[var(--brand-hot)] to-transparent"></div>
+                    <div className="absolute left-[-21px] md:left-[-38px] top-1/2 -translate-y-1/2 w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-[var(--brand-wine)]"></div>
                   </div>
 
-                  <div className="absolute bottom-[5%] left-1/2 -translate-x-1/2">
-                    <div className="px-4 py-3 rounded-2xl bg-white/92 border border-fuchsia-100 shadow-xl backdrop-blur-sm w-[220px] text-center">
-                      <p className="text-[8px] font-black uppercase tracking-[0.25em] text-slate-400 mb-1">Tecnologia</p>
-                      <p className="text-[11px] font-black uppercase tracking-wider text-black">{currentEq.specs?.[0]?.value || 'Alta Performance'}</p>
+                  <div className="absolute bottom-[6%] md:bottom-[5%] left-1/2 -translate-x-1/2">
+                    <div className="px-2 py-2 md:px-4 md:py-3 rounded-xl md:rounded-2xl bg-white/92 border border-fuchsia-100 shadow-xl backdrop-blur-sm w-[180px] md:w-[220px] text-center">
+                      <p className="text-[7px] md:text-[8px] font-black uppercase tracking-[0.2em] md:tracking-[0.25em] text-slate-400 mb-1">Tecnologia</p>
+                      <p className="text-[8px] md:text-[11px] font-black uppercase tracking-wide md:tracking-wider text-black line-clamp-2">{currentEq.specs?.[0]?.value || 'Alta Performance'}</p>
                     </div>
-                    <div className="absolute left-1/2 -translate-x-1/2 top-[-20px] w-[2px] h-5 bg-gradient-to-t from-[var(--brand-hot)] to-transparent"></div>
-                    <div className="absolute left-1/2 -translate-x-1/2 top-[-24px] w-2 h-2 rounded-full bg-[var(--brand-hot)]"></div>
+                    <div className="absolute left-1/2 -translate-x-1/2 top-[-14px] md:top-[-20px] w-[2px] h-3 md:h-5 bg-gradient-to-t from-[var(--brand-hot)] to-transparent"></div>
+                    <div className="absolute left-1/2 -translate-x-1/2 top-[-17px] md:top-[-24px] w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-[var(--brand-hot)]"></div>
                   </div>
                 </div>
               </div>

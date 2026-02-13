@@ -6,7 +6,8 @@ export default defineConfig(({ mode }) => {
     const env = loadEnv(mode, '.', '');
     return {
       build: {
-        target: 'es2018',
+        target: ['es2015', 'safari13'],
+        cssTarget: 'safari13',
       },
       server: {
         port: 3000,
