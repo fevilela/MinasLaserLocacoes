@@ -23,22 +23,13 @@
     <meta name="twitter:title" content="Locação de Equipamentos Estéticos em Lavras, MG | Minas Laser Locações" />
     <meta name="twitter:description" content="Laser e tecnologias estéticas para clínicas e profissionais em Lavras e Minas Gerais, com suporte técnico e treinamento." />
     <meta name="twitter:image" content="https://minas-laser-locacoes.vercel.app/images/Logo.png" />
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-P7043Q1XBZ"></script>
     <script>
-      (function () {
-        var GA4_ID = "%VITE_GA4_ID%";
-        var isValidGa4Id = /^G-[A-Z0-9]+$/i.test(GA4_ID);
-        if (!isValidGa4Id) return;
-
-        window.dataLayer = window.dataLayer || [];
-        window.gtag = window.gtag || function () { window.dataLayer.push(arguments); };
-        window.gtag("js", new Date());
-        window.gtag("config", GA4_ID);
-
-        var script = document.createElement("script");
-        script.async = true;
-        script.src = "https://www.googletagmanager.com/gtag/js?id=" + encodeURIComponent(GA4_ID);
-        document.head.appendChild(script);
-      })();
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-P7043Q1XBZ');
     </script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
