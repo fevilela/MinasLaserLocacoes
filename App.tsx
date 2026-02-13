@@ -381,9 +381,9 @@ const App: React.FC = () => {
     },
     {
       id: '4',
-      title: 'INKIE LASER',
-      description: 'O INKIE é o laser mais eficiente e eficaz na remoção de tatuagem e lesões pigmentadas para clínicas de ponta. Com o Inkie, você tem o poder de oferecer e atender uma grande demanda por tratamentos atuais com segurança e resultados incomparáveis.',
-      highlight: 'Remoção de Tatuagem Premium',
+      title: 'INC',
+      description: 'O INC é um laser de alta performance para remoção de tatuagem e lesões pigmentadas em clínicas de ponta. Com o INC, você amplia possibilidades de tratamento com segurança e resultados consistentes.',
+      highlight: 'LASER ND-YAG-Q-SWITCH',
       image: imageUrl('Inkie%20Laser.png'),
       category: 'Remoção de Tatuagem',
       specs: [
@@ -433,7 +433,7 @@ const App: React.FC = () => {
     },
     {
       id: '8',
-      title: 'REDUX',
+      title: 'CRIO REDUX',
       description: 'O equipamento que utiliza o resfriamento controlado para congelar a gordura sob a pele e eliminá-la. É um tratamento para redução de gordura localizada, com base na Criolipólise – técnica que utiliza uma nova tecnologia de resfriamento intenso e localizado, no qual as células de gordura são eliminadas com o frio, sem causar danos aos tecidos adjacentes.',
       highlight: 'Resfriamento Controlado',
       image: imageUrl('Redux.png'),
@@ -446,7 +446,7 @@ const App: React.FC = () => {
     },
     {
       id: '9',
-      title: 'LUZ PULSADA HTM',
+      title: 'LIGHT PULSE',
       description: 'O Light Pulse® é um aparelho de Luz Intensa Pulsada, desenvolvido para trabalhar com um aplicador de filtro óptico intercambiável e/ou filtro óptico fixo. Conta ainda com display touch screen de 8", com interface amigável e que permite a completa visualização dos parâmetros aplicados, proporcionando maior precisão e manutenção dos padrões de tratamentos pré-estabelecidos.',
       highlight: 'Luz Intensa Pulsada Flex',
       image: imageUrl('Luz%20Pulsada%20HTM.png'),
@@ -498,9 +498,9 @@ const App: React.FC = () => {
     },
     {
       id: '13',
-      title: 'NEOXEL CO2',
+      title: 'NEOXCEL CO2',
       description: 'O Neoxel é um laser de CO2 fracionado de alta performance, ideal para rejuvenescimento profundo, tratamento de cicatrizes e estrias. Sua tecnologia permite uma ablação precisa da pele, estimulando intensamente a produção de colágeno e promovendo uma renovação celular completa com resultados visíveis desde a primeira sessão.',
-      highlight: 'Rejuvenescimento & Cicatrizes',
+      highlight: 'CO2 Ultrapulsado',
       image: imageUrl('Neoxel%20CO2.png'),
       category: 'Laser & Rejuvenescimento',
       specs: [
@@ -636,11 +636,38 @@ const App: React.FC = () => {
     },
   ];
 
-  const featuredEquipmentTitles = new Set(['LAVIEEN', 'NEOXEL CO2', 'ULTRAFORMER MPT']);
-  const heroEquipments = equipments.filter((e) => featuredEquipmentTitles.has(e.title));
+  const equipmentDisplayOrder = [
+    'NEOXCEL CO2',
+    'LAVIEEN',
+    'ULTRAFORMER MPT',
+    'SOPRANO ICE PLATINUM',
+    'LIGHTSHEER LIGHT',
+    'LIGHT PULSE',
+    'INC',
+    'RESFRIADOR FREDDO',
+    'IMUSCLE BUILDING',
+    'CRIOFREQUÊNCIA BHS',
+    'HYBRIUS',
+    'ILIPO',
+    'ASGARD CRIOLIPÓLISE',
+    'POLARYS PLAXX',
+    'CRIO REDUX',
+  ];
+  const equipmentOrderIndex = new Map(equipmentDisplayOrder.map((title, idx) => [title, idx]));
+  const sortedEquipments = [...equipments].sort((a, b) => {
+    const aIdx = equipmentOrderIndex.get(a.title);
+    const bIdx = equipmentOrderIndex.get(b.title);
+    if (aIdx === undefined && bIdx === undefined) return 0;
+    if (aIdx === undefined) return 1;
+    if (bIdx === undefined) return -1;
+    return aIdx - bIdx;
+  });
+
+  const featuredEquipmentTitles = new Set(['LAVIEEN', 'NEOXCEL CO2', 'ULTRAFORMER MPT']);
+  const heroEquipments = sortedEquipments.filter((e) => featuredEquipmentTitles.has(e.title));
   const categories = [
     'Todos',
-    ...Array.from(new Set(equipments.map((e) => e.category))),
+    ...Array.from(new Set(sortedEquipments.map((e) => e.category))),
     'Qualidade da Pele',
     'Flacidez',
     'Vasinhos',
@@ -663,16 +690,16 @@ const App: React.FC = () => {
     LAVIEEN: ['Qualidade da Pele', 'Peeling', 'Rosaceas', 'Estimulo de Colageno'],
     'ULTRAFORMER MPT': ['Flacidez', 'Ultrasom Microfocado', 'Estimulo de Colageno'],
     'SOPRANO ICE PLATINUM': ['Qualidade da Pele'],
-    'INKIE LASER': ['Peeling', 'Qualidade da Pele'],
+    INC: ['Peeling', 'Qualidade da Pele'],
     'LIGHTSHEER LIGHT': ['Qualidade da Pele'],
     'ASGARD CRIOLIPÓLISE': ['Gordura Localizada'],
     'POLARYS PLAXX': ['Gordura Localizada', 'Eletroestimulação'],
-    REDUX: ['Gordura Localizada'],
-    'LUZ PULSADA HTM': ['Vasinhos', 'Rosaceas', 'Qualidade da Pele'],
+    'CRIO REDUX': ['Gordura Localizada'],
+    'LIGHT PULSE': ['Vasinhos', 'Rosaceas', 'Qualidade da Pele'],
     HYBRIUS: ['Gordura Localizada', 'Radiofrequencia'],
     'CRIOFREQUÊNCIA BHS': ['Flacidez', 'Radiofrequencia', 'Gordura Localizada'],
     'IMUSCLE BUILDING': ['Eletroestimulação', 'Gordura Localizada'],
-    'NEOXEL CO2': ['Peeling', 'Estimulo de Colageno', 'Qualidade da Pele'],
+    'NEOXCEL CO2': ['Peeling', 'Estimulo de Colageno', 'Qualidade da Pele'],
     'RESFRIADOR FREDDO': [],
     ILIPO: ['Gordura Localizada'],
   };
@@ -698,7 +725,7 @@ const App: React.FC = () => {
     return normalizeText(haystack).includes(normalizeText(filter));
   };
 
-  const filteredEquipments = equipments.filter((e) => matchesEquipmentFilter(e, activeCategory));
+  const filteredEquipments = sortedEquipments.filter((e) => matchesEquipmentFilter(e, activeCategory));
   const filteredCourses = courses;
   const trackInternalCta = (section: string, cta: string) => {
     trackEvent('cta_click', { section, cta, channel: 'onsite' });
@@ -853,17 +880,21 @@ const App: React.FC = () => {
           <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-[var(--brand-wine-glow)] blur-[150px] rounded-full"></div>
         </div>
         <div className="relative z-10 w-full max-w-7xl mx-auto px-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-14 lg:gap-20 items-center">
-            <div className="order-2 lg:order-1 animate-slideUp text-center lg:text-left">
-              <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-fuchsia-50 text-[10px] font-black text-[var(--brand-hot)] uppercase tracking-[0.35em]">
-                Atendimento em Minas Gerais
-              </span>
-              <h1 className="mt-6 text-4xl md:text-5xl lg:text-6xl font-black uppercase tracking-tighter text-black leading-[0.92]">
-                Alugue Equipamentos Estéticos Premium
-                <span className="block bg-gradient-to-r from-[var(--brand-hot)] to-[var(--brand-wine)] bg-clip-text text-transparent">Sem Imobilizar Capital e Com Mais Faturamento</span>
-              </h1>
-              <p className="mt-6 text-slate-500 text-base md:text-lg font-light leading-relaxed max-w-xl mx-auto lg:mx-0">
-                Receba tecnologia de ponta, suporte técnico e treinamento para começar rápido, atender com confiança e pagar apenas pelo período de uso.
+          <div className="animate-slideUp text-center">
+            <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-fuchsia-50 text-[10px] font-black text-[var(--brand-hot)] uppercase tracking-[0.35em]">
+              Atendimento em Minas Gerais
+            </span>
+            <h1 className="mt-6 w-full max-w-5xl mx-auto text-3xl md:text-5xl lg:text-6xl font-black uppercase tracking-tight text-black leading-[0.92]">
+              <span className="block">Alugue Equipamentos</span>
+              <span className="block">Estéticos Premium</span>
+              <span className="block bg-gradient-to-r from-[var(--brand-hot)] to-[var(--brand-wine)] bg-clip-text text-transparent">Sem Imobilizar Capital.</span>
+            </h1>
+          </div>
+
+          <div className="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-14 lg:gap-20 items-center">
+            <div className="text-center lg:text-left">
+              <p className="text-slate-500 text-base md:text-lg font-light leading-relaxed max-w-xl mx-auto lg:mx-0">
+                Mais faturamento, menos risco e suporte técnico para sua clínica operar com segurança.
               </p>
               <div className="mt-4 flex flex-wrap gap-2 justify-center lg:justify-start">
                 <a href="#depilacao-laser" className="px-3 py-1.5 rounded-full bg-slate-100 text-[10px] font-bold text-slate-600 uppercase tracking-wider hover:bg-slate-200 transition-colors">Locação laser depilação</a>
@@ -901,7 +932,7 @@ const App: React.FC = () => {
               </p>
             </div>
 
-            <div className="order-1 lg:order-2 relative flex items-center justify-center">
+            <div className="relative flex items-center justify-center">
               <div className="relative w-[280px] md:w-[420px] lg:w-[480px] aspect-square flex items-center justify-center group">
                 <CreativeTechAura />
                 <HeroParticles />
@@ -1227,19 +1258,22 @@ const App: React.FC = () => {
 
       <section id="contato" className="py-20 bg-[#fafafa]">
         <div className="container mx-auto px-6">
-          <div className="max-w-5xl mx-auto glass-card rounded-[4rem] p-12 md:p-20 border-fuchsia-100">
-             <div className="grid grid-cols-1 lg:grid-cols-2 gap-24">
-               <div className="flex flex-col justify-center">
-                 <h2 className="text-5xl md:text-6xl font-black mb-10 uppercase tracking-tighter leading-none text-black">Comece seu próximo ciclo <br/><span className="bg-gradient-to-r from-[var(--brand-hot)] to-[var(--brand-wine)] bg-clip-text text-transparent">com agenda cheia.</span></h2>
-                 <p className="text-slate-500 text-base font-light leading-relaxed mb-4">Fale com nossa equipe no WhatsApp e receba a sugestão de equipamento ideal para o seu perfil de clínica.</p>
+          <div className="max-w-4xl mx-auto glass-card rounded-[4rem] p-12 md:p-20 border-fuchsia-100">
+             <div className="grid grid-cols-1 gap-14">
+               <div className="flex flex-col justify-center text-center">
+                 <h2 className="text-4xl md:text-5xl font-black mb-8 uppercase tracking-tight leading-[0.95] text-black">
+                   Comece seu próximo ciclo
+                   <span className="block mt-2 bg-gradient-to-r from-[var(--brand-hot)] to-[var(--brand-wine)] bg-clip-text text-transparent">com agenda cheia.</span>
+                 </h2>
+                 <p className="text-slate-500 text-base font-light leading-relaxed mb-4 max-w-3xl mx-auto">Fale com nossa equipe no WhatsApp e receba a sugestão de equipamento ideal para o seu perfil de clínica.</p>
                  <p className="text-slate-500 text-sm font-medium leading-relaxed mb-12">Resposta rápida, suporte técnico e operação segura em Lavras e demais regiões de Minas Gerais.</p>
                  <div className="mb-8 rounded-2xl border border-fuchsia-100 bg-white/80 p-5">
                    <p className="text-[10px] font-black uppercase tracking-[0.35em] text-[var(--brand-hot)]">Oferta da Semana</p>
                    <p className="mt-2 text-sm text-slate-600">Agenda de locação com vagas limitadas por rota regional. Antecipe sua reserva para não perder o próximo ciclo.</p>
                  </div>
-                 <div className="flex flex-col gap-4">
+                 <div className="flex flex-col gap-4 items-center">
                    <a href="https://www.instagram.com/minaslaserlocacoes/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-6 text-[11px] font-bold uppercase tracking-widest text-[var(--brand-wine)] hover:text-[var(--brand-hot)] transition-colors"><Send className="w-5 h-5 text-[var(--brand-hot)]" /> <span>@minaslaserlocacoes</span></a>
-                    <a
+                   <a
                       href={getDefaultWhatsAppLink(defaultWhatsappText)}
                       onClick={(e) => {
                         handleWhatsAppCtaClick(e, defaultWhatsappText, 'contato', 'falar_whatsapp_agora');
@@ -1252,7 +1286,7 @@ const App: React.FC = () => {
                     </a>
                   </div>
                 </div>
-               <div className="bg-white/50 p-8 rounded-[2rem] border border-fuchsia-50 shadow-inner">
+                <div className="bg-white/50 p-8 rounded-[2rem] border border-fuchsia-50 shadow-inner">
                  {formState === 'success' ? (
                    <div className="text-center py-16 animate-fadeIn">
                      <CheckCircle className="text-[var(--brand-wine)] w-16 h-16 mx-auto mb-8" />
