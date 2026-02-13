@@ -595,11 +595,11 @@ const App: React.FC = () => {
     'Eletroestimulação',
   ];
 
-  const normalizeText = (value: string) =>
-    value
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .toLowerCase();
+  const normalizeText = (value: string) => {
+    const raw = String(value || '');
+    const normalized = typeof raw.normalize === 'function' ? raw.normalize('NFD') : raw;
+    return normalized.replace(/[\u0300-\u036f]/g, '').toLowerCase();
+  };
 
   const equipmentClinicalTags: Record<string, string[]> = {
     LAVIEEN: ['Qualidade da Pele', 'Peeling', 'Rosaceas', 'Estimulo de Colageno'],
