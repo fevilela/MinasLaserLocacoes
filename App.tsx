@@ -26,7 +26,7 @@ import {
 } from 'lucide-react';
 import { Equipment, BlogPost, Course } from './types';
 
-const imageUrl = (file: string) => `${import.meta.env.BASE_URL}images/${file}`;
+const imageUrl = (file: string) => `${(import.meta as any).env.BASE_URL}images/${file}`;
 
 const WHATSAPP_NUMBERS = (((import.meta as any).env.VITE_WHATSAPP_NUMBERS as string) || '5535999948797')
   .split(',')
@@ -791,6 +791,11 @@ const App: React.FC = () => {
               <p className="mt-6 text-slate-500 text-base md:text-lg font-light leading-relaxed max-w-xl mx-auto lg:mx-0">
                 Locação de laser estético em Lavras e Minas Gerais, com suporte técnico, treinamento e modelos de alta performance para crescer com previsibilidade.
               </p>
+              <div className="mt-4 flex flex-wrap gap-2 justify-center lg:justify-start">
+                <a href="#depilacao-laser" className="px-3 py-1.5 rounded-full bg-slate-100 text-[10px] font-bold text-slate-600 uppercase tracking-wider hover:bg-slate-200 transition-colors">Locação laser depilação</a>
+                <a href="#ultraformer-mpt" className="px-3 py-1.5 rounded-full bg-slate-100 text-[10px] font-bold text-slate-600 uppercase tracking-wider hover:bg-slate-200 transition-colors">Ultraformer MPT aluguel</a>
+                <a href="#lavieen-locacao" className="px-3 py-1.5 rounded-full bg-slate-100 text-[10px] font-bold text-slate-600 uppercase tracking-wider hover:bg-slate-200 transition-colors">Lavieen locação</a>
+              </div>
               <div className="mt-8 grid grid-cols-2 gap-3 max-w-xl mx-auto lg:mx-0">
                 <div className="rounded-2xl border border-fuchsia-100 bg-white p-4 text-center">
                   <p className="text-xl font-black text-black">24h</p>
@@ -876,11 +881,9 @@ const App: React.FC = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
             <div className="order-2 space-y-10 animate-slideUp">
               <div className="space-y-8 text-slate-500 font-light leading-loose text-lg max-w-xl">
-                <p>Desde 2009, impulsionando profissionais da estética através da tecnologia certa.</p>
-                <p>Nascemos da paixão pela beleza e da visão empreendedora de duas irmãs que sempre acreditaram que inovação só faz sentido quando gera resultados concretos - clínicos e financeiros.</p>
+                <p>Desde 2009, impulsionando profissionais da estética através da tecnologia certa.Nascemos da paixão pela beleza e da visão empreendedora de duas irmãs que sempre acreditaram que inovação só faz sentido quando gera resultados concretos - clínicos e financeiros.</p>
                 <p>Há 17 anos, selecionamos e disponibilizamos equipamentos estéticos de alta performance para profissionais e clínicas que desejam crescer com segurança, autoridade e maior lucratividade.</p>
-                <p>Mais do que tecnologia, oferecemos curadoria criteriosa, suporte próximo e soluções que acompanham a evolução do mercado - da estética facial aos protocolos corporais e à remoção de pelos a laser.</p>
-                <p>Cada equipamento do nosso portfólio é escolhido com um propósito claro: elevar o padrão dos seus atendimentos, potencializar seus resultados e aumentar a rentabilidade da sua clínica.</p>
+                <p>Mais do que tecnologia, oferecemos curadoria criteriosa, suporte próximo e soluções que acompanham a evolução do mercado - da estética facial aos protocolos corporais e à remoção de pelos a laser. Cada equipamento do nosso portfólio é escolhido com um propósito claro: elevar o padrão dos seus atendimentos, potencializar seus resultados e aumentar a rentabilidade da sua clínica.</p>
                 <p>Se você quer evoluir sua estrutura, fortalecer seu posicionamento e transformar tecnologia em faturamento, está no lugar certo.</p>
                 <p className="font-medium text-slate-700">Minas Laser Locações.<br />Tecnologia que gera resultado. Lucro que sustenta crescimento.</p>
               </div>
@@ -971,6 +974,48 @@ const App: React.FC = () => {
                   Fale no WhatsApp
                 </a>
               </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="intencoes-seo" className="py-20 bg-white border-b border-slate-100">
+        <div className="container mx-auto px-6">
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-12">
+              <span className="text-[10px] font-bold text-[var(--brand-hot)] uppercase tracking-[0.5em]">Soluções por Objetivo</span>
+              <h2 className="mt-5 text-4xl md:text-5xl font-black uppercase tracking-tighter text-black">Páginas de Busca Mais Procuradas</h2>
+              <p className="mt-4 text-slate-500 max-w-3xl mx-auto">Conteúdo otimizado para as principais pesquisas de clínicas e profissionais que buscam locação de equipamentos estéticos em Minas Gerais.</p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <article id="depilacao-laser" className="rounded-3xl border border-slate-100 bg-[#fcfcfc] p-8">
+                <p className="text-[9px] font-bold uppercase tracking-[0.3em] text-[var(--brand-hot)]">Locação Laser Estética</p>
+                <h3 className="mt-3 text-2xl font-black tracking-tight text-black">Aluguel de Laser para Remoção de Pelos</h3>
+                <p className="mt-3 text-slate-500 leading-relaxed">Equipamentos como Soprano Ice Platinum e LightSheer para clínicas que precisam de tecnologia premium, segurança e previsibilidade operacional.</p>
+                <a href="#contato" className="mt-5 inline-block text-[11px] font-black uppercase tracking-[0.25em] text-[var(--brand-wine)] hover:text-[var(--brand-hot)] transition-colors">Solicitar Proposta</a>
+              </article>
+
+              <article id="ultraformer-mpt" className="rounded-3xl border border-slate-100 bg-[#fcfcfc] p-8">
+                <p className="text-[9px] font-bold uppercase tracking-[0.3em] text-[var(--brand-hot)]">Lifting e Ultrassom</p>
+                <h3 className="mt-3 text-2xl font-black tracking-tight text-black">Locação de Ultraformer MPT</h3>
+                <p className="mt-3 text-slate-500 leading-relaxed">Aluguel de Ultraformer MPT para protocolos faciais e corporais com alto valor agregado, suporte técnico e treinamento para sua equipe.</p>
+                <a href="#contato" className="mt-5 inline-block text-[11px] font-black uppercase tracking-[0.25em] text-[var(--brand-wine)] hover:text-[var(--brand-hot)] transition-colors">Peça um Orçamento</a>
+              </article>
+
+              <article id="lavieen-locacao" className="rounded-3xl border border-slate-100 bg-[#fcfcfc] p-8">
+                <p className="text-[9px] font-bold uppercase tracking-[0.3em] text-[var(--brand-hot)]">Rejuvenescimento</p>
+                <h3 className="mt-3 text-2xl font-black tracking-tight text-black">Locação de Lavieen para Clínicas</h3>
+                <p className="mt-3 text-slate-500 leading-relaxed">Locação do Lavieen para protocolos de qualidade da pele, manchas e poros com operação segura e suporte próximo para resultados consistentes.</p>
+                <a href="#contato" className="mt-5 inline-block text-[11px] font-black uppercase tracking-[0.25em] text-[var(--brand-wine)] hover:text-[var(--brand-hot)] transition-colors">Falar com Especialista</a>
+              </article>
+
+              <article id="locacao-minas-gerais" className="rounded-3xl border border-slate-100 bg-[#fcfcfc] p-8">
+                <p className="text-[9px] font-bold uppercase tracking-[0.3em] text-[var(--brand-hot)]">Atuação Regional</p>
+                <h3 className="mt-3 text-2xl font-black tracking-tight text-black">Locação de Equipamentos Estéticos em Minas Gerais</h3>
+                <p className="mt-3 text-slate-500 leading-relaxed">Atendemos Lavras e diversas cidades de Minas Gerais com logística planejada, curadoria de equipamentos e acompanhamento técnico.</p>
+                <a href="#contato" className="mt-5 inline-block text-[11px] font-black uppercase tracking-[0.25em] text-[var(--brand-wine)] hover:text-[var(--brand-hot)] transition-colors">Solicite Atendimento</a>
+              </article>
             </div>
           </div>
         </div>
