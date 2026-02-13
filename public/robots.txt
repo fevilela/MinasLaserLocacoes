@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://minaslaser.com.br/sitemap.xml
+Sitemap: https://minas-laser-locacoes.vercel.app/sitemap.xml
