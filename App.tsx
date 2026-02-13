@@ -133,7 +133,7 @@ const EquipmentModal: React.FC<{ equipment: Equipment; onClose: () => void }> = 
       <div className="relative w-full max-w-5xl bg-white border border-fuchsia-100 rounded-[3rem] overflow-hidden shadow-2xl flex flex-col md:flex-row max-h-[90vh] lg:max-h-[85vh] animate-slideUp">
         <div className="md:w-1/2 bg-slate-50 flex items-center justify-center p-12 relative overflow-hidden">
           <CreativeTechAura />
-          <img src={equipment.image} alt={equipment.title} className="relative z-10 max-w-full max-h-full object-contain drop-shadow-2xl" />
+          <img src={equipment.image} alt={equipment.title} loading="lazy" decoding="async" className="relative z-10 max-w-full max-h-full object-contain drop-shadow-2xl" />
         </div>
         <div className="md:w-1/2 p-8 md:p-12 overflow-y-auto">
           <button onClick={onClose} className="absolute top-6 right-6 p-2 rounded-full hover:bg-slate-100 transition-colors text-slate-400 hover:text-black"><X className="w-6 h-6" /></button>
@@ -190,7 +190,7 @@ const CourseModal: React.FC<{ course: Course; onClose: () => void }> = ({ course
       <div className="absolute inset-0 bg-white/80 backdrop-blur-xl" onClick={onClose}></div>
       <div className="relative w-full max-w-4xl bg-white border border-fuchsia-100 rounded-[3rem] overflow-hidden shadow-2xl flex flex-col md:flex-row max-h-[90vh] animate-slideUp">
         <div className="md:w-5/12 bg-black relative overflow-hidden flex items-center justify-center">
-          <img src={course.image} alt={course.title} className="w-full h-full object-contain opacity-90" />
+          <img src={course.image} alt={course.title} loading="lazy" decoding="async" className="w-full h-full object-contain opacity-90" />
           <div className="absolute inset-0 bg-gradient-to-t from-black via-[var(--brand-wine-overlay)] to-transparent"></div>
           <div className="absolute bottom-8 left-8 right-8">
             <div className="flex items-center gap-2 text-[var(--brand-hot)] mb-4">
@@ -262,7 +262,7 @@ const PostModal: React.FC<{ post: BlogPost; onClose: () => void }> = ({ post, on
       <div className="absolute inset-0 bg-white/90 backdrop-blur-2xl" onClick={onClose}></div>
       <div className="relative w-full max-w-4xl bg-white border border-slate-100 rounded-[2rem] overflow-hidden shadow-2xl flex flex-col max-h-[90vh] animate-slideUp">
         <div className="relative h-64 md:h-80 overflow-hidden">
-          <img src={post.image} alt={post.title} className="w-full h-full object-cover" />
+          <img src={post.image} alt={post.title} loading="lazy" decoding="async" className="w-full h-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-fuchsia-900/20 to-transparent"></div>
           <button onClick={onClose} className="absolute top-6 right-6 p-2 rounded-full bg-white/20 backdrop-blur-md text-white hover:bg-white hover:text-black transition-all"><X className="w-6 h-6" /></button>
           <div className="absolute bottom-8 left-8 right-8">
@@ -294,7 +294,7 @@ const PostModal: React.FC<{ post: BlogPost; onClose: () => void }> = ({ post, on
 
 const App: React.FC = () => {
   const LEADS_WEBHOOK_URL = (import.meta as any).env.VITE_LEADS_WEBHOOK_URL || '';
-  const defaultWhatsappText = 'Olá! Vim pelo site da Minas Laser e quero mais informações.';
+  const defaultWhatsappText = 'Olá! Vim pelo site da Minas Laser e quero solicitar um orçamento para locação de equipamentos.';
   const [selectedEquipment, setSelectedEquipment] = useState<Equipment | null>(null);
   const [selectedPost, setSelectedPost] = useState<BlogPost | null>(null);
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
@@ -522,7 +522,7 @@ const App: React.FC = () => {
       duration: 'Curso Completo',
       category: 'Operacional',
       instructor: 'Equipe Técnica Minas Laser',
-      image: imageUrl('Laser%20Lavieen%20curso.png'),
+      image: imageUrl('Laser%20Lavieen%20curso-optimized.jpg'),
       modules: ['Teoria Completa', 'Prática em Pacientes Modelo', 'Certificado', 'Material Didático', 'Suporte pós Curso']
     },
     {
@@ -542,7 +542,7 @@ const App: React.FC = () => {
       duration: 'Curso Completo',
       category: 'Operacional',
       instructor: 'Equipe Técnica Minas Laser',
-      image: imageUrl('Ultraforme%20MPT.png'),
+      image: imageUrl('Ultraforme%20MPT-optimized.jpg'),
       modules: ['Teoria Completa', 'Prática em Pacientes Modelo', 'Certificado', 'Material Didático', 'Suporte pós Curso']
     }
   ];
@@ -578,6 +578,29 @@ const App: React.FC = () => {
       author: 'Eng. Biomédico',
       image: 'https://images.unsplash.com/photo-1532938911079-1b06ac7ceec7?auto=format&fit=crop&q=80&w=1000'
     }
+  ];
+
+  const faqItems = [
+    {
+      question: 'Vocês atendem apenas Lavras, MG?',
+      answer:
+        'Atendemos Lavras e outras cidades de Minas Gerais com logística planejada para clínicas e profissionais da estética.',
+    },
+    {
+      question: 'Quais equipamentos para remoção de pelos a laser estão disponíveis para locação?',
+      answer:
+        'Trabalhamos com plataformas como Soprano Ice Platinum e LightSheer, com foco em alta performance e segurança clínica.',
+    },
+    {
+      question: 'É melhor locação ou compra de equipamento estético?',
+      answer:
+        'A locação reduz imobilização de capital, acelera retorno e permite atualizar tecnologia conforme a demanda da clínica.',
+    },
+    {
+      question: 'Como funciona suporte e treinamento na locação?',
+      answer:
+        'Além do equipamento, oferecemos orientação operacional, suporte técnico e treinamento para elevar segurança e resultado.',
+    },
   ];
 
   const featuredEquipmentTitles = new Set(['LAVIEEN', 'NEOXEL CO2', 'ULTRAFORMER MPT']);
@@ -716,6 +739,7 @@ const App: React.FC = () => {
             <a href="#home" className="hover:text-black transition-colors">Home</a>
             <a href="#sobre" className="hover:text-black transition-colors">Sobre</a>
             <a href="#equipamentos" className="hover:text-black transition-colors">Portfólio</a>
+            <a href="#faq" className="hover:text-black transition-colors">FAQ</a>
           </nav>
           <div className="absolute left-1/2 -translate-x-1/2 flex flex-col items-center">
              <img src={imageUrl('Logo.png')} alt="Minas Laser" className={`transition-all duration-700 object-contain drop-shadow-sm ${isScrolled ? 'h-8 md:h-9' : 'h-10 md:h-12'}`} onError={(e) => { e.currentTarget.src = "https://i.ibb.co/LdfV8R9/logo-minas.png"; }} />
@@ -739,6 +763,7 @@ const App: React.FC = () => {
                 <a href="#home" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-black transition-colors">Home</a>
                 <a href="#sobre" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-black transition-colors">Sobre</a>
                 <a href="#equipamentos" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-black transition-colors">Portfólio</a>
+                <a href="#faq" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-black transition-colors">FAQ</a>
                 <a href="#cursos" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-black transition-colors">Cursos</a>
                 <a href="#blog" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-black transition-colors">Blog</a>
                 <a href="#contato" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-black transition-colors">Contato</a>
@@ -757,14 +782,14 @@ const App: React.FC = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-14 lg:gap-20 items-center">
             <div className="order-2 lg:order-1 animate-slideUp text-center lg:text-left">
               <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-fuchsia-50 text-[10px] font-black text-[var(--brand-hot)] uppercase tracking-[0.35em]">
-                Alta Demanda
+                Lavras - MG
               </span>
               <h1 className="mt-6 text-4xl md:text-5xl lg:text-6xl font-black uppercase tracking-tighter text-black leading-[0.92]">
-                Escale Sua Clinica
-                <span className="block bg-gradient-to-r from-[var(--brand-hot)] to-[var(--brand-wine)] bg-clip-text text-transparent">Sem Comprar Equipamentos</span>
+                Locação de Equipamentos Estéticos
+                <span className="block bg-gradient-to-r from-[var(--brand-hot)] to-[var(--brand-wine)] bg-clip-text text-transparent">Premium para Clínicas e Profissionais</span>
               </h1>
               <p className="mt-6 text-slate-500 text-base md:text-lg font-light leading-relaxed max-w-xl mx-auto lg:mx-0">
-                Locacao imediata dos equipamentos mais procurados, com suporte tecnico especializado e operacao segura para sua equipe.
+                Locação de laser estético em Lavras e Minas Gerais, com suporte técnico, treinamento e modelos de alta performance para crescer com previsibilidade.
               </p>
               <div className="mt-8 grid grid-cols-2 gap-3 max-w-xl mx-auto lg:mx-0">
                 <div className="rounded-2xl border border-fuchsia-100 bg-white p-4 text-center">
@@ -778,14 +803,23 @@ const App: React.FC = () => {
               </div>
               <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
                 <a href="#contato" className="inline-block px-10 py-4 bg-gradient-to-r from-[var(--brand-hot)] to-[var(--brand-wine)] text-white rounded-full transition-all duration-500 uppercase text-[10px] font-black tracking-[0.35em] shadow-2xl shadow-fuchsia-200 hover:scale-[1.02]">
-                  Quero Agenda Prioritaria
+                  Solicitar Orçamento
                 </a>
-                <a href="#equipamentos" className="inline-block px-10 py-4 border border-fuchsia-200 text-[var(--brand-wine)] rounded-full hover:bg-fuchsia-50 transition-colors uppercase text-[10px] font-bold tracking-[0.35em]">
-                  Ver Equipamentos
+                <a
+                  href={getDefaultWhatsAppLink(defaultWhatsappText)}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    openRotatingWhatsApp(defaultWhatsappText);
+                  }}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-block px-10 py-4 border border-fuchsia-200 text-[var(--brand-wine)] rounded-full hover:bg-fuchsia-50 transition-colors uppercase text-[10px] font-bold tracking-[0.35em]"
+                >
+                  Fale no WhatsApp
                 </a>
               </div>
               <p className="mt-5 text-[11px] font-semibold text-slate-500">
-                Proxima janela de locacao: vagas limitadas nesta semana.
+                Locação para depilação a laser, rejuvenescimento e protocolos corporais. Vagas limitadas nesta semana.
               </p>
             </div>
 
@@ -794,7 +828,7 @@ const App: React.FC = () => {
                 <CreativeTechAura />
                 <HeroParticles />
                 <div key={`img-wrap-${currentIdx}`} className="w-full h-full flex items-center justify-center relative z-10 animate-impact">
-                  <img src={currentEq.image} alt={currentEq.title} className="max-w-[85%] max-h-[85%] object-contain drop-shadow-2xl animate-bounce-slow" />
+                 <img src={currentEq.image} alt={currentEq.title} loading="eager" fetchPriority="high" decoding="async" className="max-w-[85%] max-h-[85%] object-contain drop-shadow-2xl animate-bounce-slow" />
                 </div>
                 <div className="absolute inset-0 z-20 pointer-events-none">
                   <div className="absolute top-[34%] left-[1%] md:top-[36%] md:left-[2%] -translate-y-1/2">
@@ -842,10 +876,13 @@ const App: React.FC = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
             <div className="order-2 space-y-10 animate-slideUp">
               <div className="space-y-8 text-slate-500 font-light leading-loose text-lg max-w-xl">
-                <p>Fundada em 2009 por duas irmãs apaixonadas pelo universo da beleza, nossa missão sempre foi tornar as tecnologias estéticas de ponta e os cursos especializados mais acessíveis a profissionais que desejam se destacar no mercado.</p>
-                <p>Ao longo desses 17 anos, construímos uma trajetória sólida, acompanhando de perto as últimas tendências e os mais avançados recursos tecnológicos para oferecer soluções modernas, eficazes e seguras aos nossos clientes.</p>
-                <p>Nosso compromisso com a excelência nos leva a selecionar cuidadosamente cada equipamento do nosso portfólio, garantindo alta performance e resultados excepcionais. Da estética facial aos tratamentos corporais e à remoção de pelos a laser, estamos sempre um passo à frente, unindo inovação, qualidade e confiança.</p>
-                <p>Junte-se a nós e faça parte dessa evolução. Seguimos moldando o futuro da estética — uma inovação de cada vez.</p>
+                <p>Desde 2009, impulsionando profissionais da estética através da tecnologia certa.</p>
+                <p>Nascemos da paixão pela beleza e da visão empreendedora de duas irmãs que sempre acreditaram que inovação só faz sentido quando gera resultados concretos - clínicos e financeiros.</p>
+                <p>Há 17 anos, selecionamos e disponibilizamos equipamentos estéticos de alta performance para profissionais e clínicas que desejam crescer com segurança, autoridade e maior lucratividade.</p>
+                <p>Mais do que tecnologia, oferecemos curadoria criteriosa, suporte próximo e soluções que acompanham a evolução do mercado - da estética facial aos protocolos corporais e à remoção de pelos a laser.</p>
+                <p>Cada equipamento do nosso portfólio é escolhido com um propósito claro: elevar o padrão dos seus atendimentos, potencializar seus resultados e aumentar a rentabilidade da sua clínica.</p>
+                <p>Se você quer evoluir sua estrutura, fortalecer seu posicionamento e transformar tecnologia em faturamento, está no lugar certo.</p>
+                <p className="font-medium text-slate-700">Minas Laser Locações.<br />Tecnologia que gera resultado. Lucro que sustenta crescimento.</p>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
                 <div className="space-y-3">
@@ -870,10 +907,10 @@ const App: React.FC = () => {
                <div className="absolute inset-0 bg-fuchsia-500/5 blur-[100px] rounded-full scale-75 group-hover:scale-100 transition-transform duration-1000"></div>
                <div className="relative z-10 p-8 bg-white border border-slate-100 rounded-[4rem] shadow-2xl overflow-hidden aspect-[4/5] lg:aspect-square flex items-center justify-center">
                   <CreativeTechAura />
-                  <img src={imageUrl('sobre.png')} alt="Nossa História" className="absolute inset-0 w-full h-full object-cover opacity-100 transition-opacity duration-700" />
+                  <img src={imageUrl('sobre-optimized.jpg')} alt="Nossa História" loading="lazy" decoding="async" className="absolute inset-0 w-full h-full object-cover opacity-100 transition-opacity duration-700" />
                   <div className="absolute bottom-6 left-6 md:bottom-8 md:left-8 z-20">
                      <div className="px-8 py-6 md:px-10 md:py-8 bg-white/95 border border-fuchsia-50 rounded-[2rem] shadow-xl text-center">
-                        <h3 className="text-4xl font-black bg-gradient-to-r from-[var(--brand-hot)] to-[var(--brand-wine)] bg-clip-text text-transparent mb-1">16+</h3>
+                        <h3 className="text-4xl font-black bg-gradient-to-r from-[var(--brand-hot)] to-[var(--brand-wine)] bg-clip-text text-transparent mb-1">17+</h3>
                         <p className="text-[9px] font-bold uppercase tracking-[0.3em] text-slate-400">Anos de Inovação</p>
                      </div>
                   </div>
@@ -900,12 +937,41 @@ const App: React.FC = () => {
               <div key={eq.id} className="group cursor-pointer flex flex-col items-center text-center animate-slideUp" onClick={() => setSelectedEquipment(eq)}>
                 <div className="relative aspect-square w-full mb-8 bg-white rounded-[3rem] overflow-hidden border border-slate-100 shadow-sm transition-all duration-700 group-hover:shadow-2xl group-hover:-translate-y-2 group-hover:border-fuchsia-100">
                   <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-1000 overflow-hidden"><CreativeTechAura /></div>
-                  <img src={eq.image} className="relative z-10 w-full h-full object-contain p-10 transition-transform duration-1000 group-hover:scale-105" alt={eq.title} />
+                  <img src={eq.image} loading="lazy" decoding="async" className="relative z-10 w-full h-full object-contain p-10 transition-transform duration-1000 group-hover:scale-105" alt={eq.title} />
                 </div>
                 <h3 className="text-lg font-black mb-2 uppercase tracking-widest text-black group-hover:text-[var(--brand-wine)] transition-colors line-clamp-1">{eq.title}</h3>
                 <p className="text-slate-400 text-[9px] font-bold uppercase tracking-[0.2em]">{eq.highlight}</p>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="py-14 bg-[#fafafa] border-y border-slate-100">
+        <div className="container mx-auto px-6">
+          <div className="max-w-5xl mx-auto rounded-[2.2rem] bg-white border border-fuchsia-100 p-8 md:p-10 shadow-sm">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-[0.35em] text-[var(--brand-hot)]">Pronto para escalar?</p>
+                <h3 className="mt-2 text-2xl md:text-3xl font-black uppercase tracking-tight text-black">Peça uma proposta agora</h3>
+                <p className="mt-2 text-sm text-slate-500">Locação de equipamentos estéticos em Lavras e região, com suporte técnico e operação segura.</p>
+              </div>
+              <div className="flex flex-col sm:flex-row gap-3">
+                <a href="#contato" className="px-7 py-4 bg-gradient-to-r from-[var(--brand-hot)] to-[var(--brand-wine)] text-white rounded-full uppercase text-[10px] font-black tracking-[0.3em] text-center">Solicite Orçamento</a>
+                <a
+                  href={getDefaultWhatsAppLink(defaultWhatsappText)}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    openRotatingWhatsApp(defaultWhatsappText);
+                  }}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-7 py-4 border border-fuchsia-200 text-[var(--brand-wine)] rounded-full uppercase text-[10px] font-black tracking-[0.3em] text-center hover:bg-fuchsia-50 transition-colors"
+                >
+                  Fale no WhatsApp
+                </a>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -920,7 +986,7 @@ const App: React.FC = () => {
             {filteredCourses.map((course) => (
               <div key={course.id} className="bg-slate-50 rounded-[3rem] p-8 group cursor-pointer hover:bg-white border border-transparent hover:border-fuchsia-100 transition-all duration-700 hover:shadow-2xl" onClick={() => setSelectedCourse(course)}>
                  <div className="relative aspect-video rounded-2xl overflow-hidden mb-8 bg-white">
-                   <img src={course.image} className="w-full h-full object-contain p-3 grayscale group-hover:grayscale-0 transition-all duration-1000" alt={course.title} />
+                   <img src={course.image} loading="lazy" decoding="async" className="w-full h-full object-contain p-3 grayscale group-hover:grayscale-0 transition-all duration-1000" alt={course.title} />
                    <div className="absolute top-4 left-4 p-3 bg-white/90 backdrop-blur-md rounded-xl"><GraduationCap className="w-5 h-5 text-[var(--brand-wine)]" /></div>
                  </div>
                  <span className="text-[9px] font-bold text-[var(--brand-hot)] uppercase tracking-widest mb-4 block">{course.category}</span>
@@ -948,7 +1014,7 @@ const App: React.FC = () => {
             {blogPosts.map((post) => (
               <article key={post.id} className="bg-white rounded-[2rem] overflow-hidden border border-slate-100 hover:border-fuchsia-200 transition-all duration-700 hover:-translate-y-3 cursor-pointer group flex flex-col h-full" onClick={() => setSelectedPost(post)}>
                 <div className="relative h-64 overflow-hidden">
-                  <img src={post.image} alt={post.title} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" />
+                  <img src={post.image} loading="lazy" decoding="async" alt={post.title} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" />
                   <div className="absolute top-6 left-6 px-4 py-1 bg-white/90 backdrop-blur-md rounded-full text-[9px] font-bold uppercase tracking-widest text-black group-hover:bg-gradient-to-r group-hover:from-[var(--brand-hot)] group-hover:to-[var(--brand-wine)] group-hover:text-white transition-all">{post.category}</div>
                 </div>
                 <div className="p-10 flex flex-col flex-grow">
@@ -959,6 +1025,26 @@ const App: React.FC = () => {
                 </div>
               </article>
             ))}
+          </div>
+        </div>
+      </section>
+
+      <section id="faq" className="py-20 bg-white">
+        <div className="container mx-auto px-6">
+          <div className="max-w-5xl mx-auto">
+            <div className="text-center mb-14">
+              <span className="text-[10px] font-bold text-[var(--brand-wine)] uppercase tracking-[0.5em] block">Conteúdo Educacional</span>
+              <h2 className="mt-5 text-4xl md:text-5xl font-black uppercase tracking-tighter text-black">Perguntas Frequentes</h2>
+              <p className="mt-4 text-slate-500 max-w-3xl mx-auto">Respostas rápidas sobre locação de equipamentos estéticos, suporte e operação para clínicas em Minas Gerais.</p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {faqItems.map((item) => (
+                <article key={item.question} className="rounded-3xl border border-slate-100 bg-[#fcfcfc] p-7">
+                  <h3 className="text-lg font-black text-black leading-tight">{item.question}</h3>
+                  <p className="mt-3 text-slate-500 text-sm leading-relaxed">{item.answer}</p>
+                </article>
+              ))}
+            </div>
           </div>
         </div>
       </section>
@@ -989,7 +1075,8 @@ const App: React.FC = () => {
              <div className="grid grid-cols-1 lg:grid-cols-2 gap-24">
                <div className="flex flex-col justify-center">
                  <h2 className="text-5xl md:text-6xl font-black mb-10 uppercase tracking-tighter leading-none text-black">Impulsione sua <br/><span className="bg-gradient-to-r from-[var(--brand-hot)] to-[var(--brand-wine)] bg-clip-text text-transparent">Clínica.</span></h2>
-                 <p className="text-slate-500 text-base font-light leading-relaxed mb-12">Agende uma demonstração ou solicite cotação para o próximo ciclo de locação da sua clínica.</p>
+                 <p className="text-slate-500 text-base font-light leading-relaxed mb-4">Agende uma demonstração ou solicite cotação para o próximo ciclo de locação da sua clínica.</p>
+                 <p className="text-slate-500 text-sm font-medium leading-relaxed mb-12">Atendimento em Lavras, MG e demais regiões de Minas Gerais.</p>
                  <div className="flex flex-col gap-4">
                    <a href="https://www.instagram.com/minaslaserlocacoes/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-6 text-[11px] font-bold uppercase tracking-widest text-[var(--brand-wine)] hover:text-[var(--brand-hot)] transition-colors"><Send className="w-5 h-5 text-[var(--brand-hot)]" /> <span>@minaslaserlocacoes</span></a>
                    <a
@@ -1060,6 +1147,7 @@ const App: React.FC = () => {
           </div>
           <div className="text-center">
             <div className="text-[9px] font-medium uppercase tracking-[0.3em] text-slate-400">&copy; 2026 MINAS LASER LOCAÇÕES - AS MELHORES SOLUÇÕES EM TECNOLOGIAS</div>
+            <div className="mt-2 text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500">Lavras - MG | Locação para clínicas e profissionais</div>
             <a
               href="https://www.instagram.com/miloia.agency/"
               target="_blank"
@@ -1087,6 +1175,20 @@ const App: React.FC = () => {
           </div>
         </div>
       </footer>
+
+      <a
+        href={getDefaultWhatsAppLink(defaultWhatsappText)}
+        onClick={(e) => {
+          e.preventDefault();
+          openRotatingWhatsApp(defaultWhatsappText);
+        }}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="fixed bottom-5 right-5 z-[120] px-5 py-3 rounded-full bg-gradient-to-r from-[var(--brand-hot)] to-[var(--brand-wine)] text-white text-[10px] font-black uppercase tracking-[0.28em] shadow-2xl shadow-fuchsia-300/40 hover:scale-[1.03] transition-transform"
+        aria-label="Falar no WhatsApp"
+      >
+        WhatsApp
+      </a>
 
       {selectedEquipment && <EquipmentModal equipment={selectedEquipment} onClose={() => setSelectedEquipment(null)} />}
       {selectedCourse && <CourseModal course={selectedCourse} onClose={() => setSelectedCourse(null)} />}
