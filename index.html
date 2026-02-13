@@ -146,6 +146,35 @@
         "inLanguage": "pt-BR"
       }
     </script>
+    <script>
+      (function () {
+        function showError(label, detail) {
+          var root = document.getElementById('root') || document.body;
+          if (!root) return;
+          var msg = String(detail || '');
+          root.innerHTML =
+            '<div style="font-family:Arial,sans-serif;padding:20px;line-height:1.4;color:#111">' +
+            '<h2 style="margin:0 0 8px 0;">Erro ao carregar o site</h2>' +
+            '<p style="margin:0 0 6px 0;"><strong>Origem:</strong> ' + label + '</p>' +
+            '<p style="margin:0 0 12px 0;"><strong>Detalhe:</strong> ' + msg.replace(/</g, '&lt;') + '</p>' +
+            '<p style="margin:0;color:#555">Envie um print desta tela.</p>' +
+            '</div>';
+        }
+
+        window.__ml_loaded = false;
+        window.addEventListener('error', function (e) {
+          showError('window.error', (e && (e.error && e.error.message)) || (e && e.message) || 'Erro desconhecido');
+        });
+        window.addEventListener('unhandledrejection', function (e) {
+          showError('unhandledrejection', e && e.reason ? e.reason : 'Promise rejeitada');
+        });
+        setTimeout(function () {
+          if (!window.__ml_loaded) {
+            showError('bootstrap-timeout', 'Aplicação não inicializou em até 6 segundos');
+          }
+        }, 6000);
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

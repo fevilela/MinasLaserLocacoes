@@ -37,7 +37,7 @@ try {
       <App />
     </React.StrictMode>
   );
+  (window as any).__ml_loaded = true;
 } catch (err) {
   showStartupError('bootstrap', err);
 }
-
