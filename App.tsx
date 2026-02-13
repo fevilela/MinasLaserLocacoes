@@ -301,6 +301,7 @@ const App: React.FC = () => {
   const [formError, setFormError] = useState<string>('');
   const [leadForm, setLeadForm] = useState({ name: '', whatsapp: '' });
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [currentIdx, setCurrentIdx] = useState(0);
 
   const equipments: Equipment[] = [
@@ -630,7 +631,10 @@ const App: React.FC = () => {
       equipment.description,
       equipment.category,
       ...clinicalTags,
-      ...(equipment.specs || []).flatMap((s) => [s.label, s.value]),
+      ...(equipment.specs || []).reduce<string[]>((acc, s) => {
+        acc.push(s.label, s.value);
+        return acc;
+      }, []),
     ].join(' ');
 
     return normalizeText(haystack).includes(normalizeText(filter));
@@ -719,7 +723,26 @@ const App: React.FC = () => {
             <a href="#blog" className="hover:text-black transition-colors">Blog</a>
             <a href="#contato" className="hover:text-black transition-colors">Contato</a>
           </nav>
-          <button className="lg:hidden text-black"><Menu /></button>
+          <button
+            className="lg:hidden text-black z-50"
+            aria-label={isMobileMenuOpen ? 'Fechar menu' : 'Abrir menu'}
+            onClick={() => setIsMobileMenuOpen((prev) => !prev)}
+          >
+            {isMobileMenuOpen ? <X /> : <Menu />}
+          </button>
+
+          {isMobileMenuOpen && (
+            <div className="lg:hidden absolute top-full left-0 right-0 mt-2 px-6">
+              <nav className="bg-white/95 backdrop-blur-md border border-fuchsia-100 rounded-2xl shadow-xl p-5 flex flex-col gap-4 text-[11px] font-bold uppercase tracking-[0.25em] text-slate-500">
+                <a href="#home" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-black transition-colors">Home</a>
+                <a href="#sobre" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-black transition-colors">Sobre</a>
+                <a href="#equipamentos" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-black transition-colors">Portfólio</a>
+                <a href="#cursos" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-black transition-colors">Cursos</a>
+                <a href="#blog" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-black transition-colors">Blog</a>
+                <a href="#contato" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-black transition-colors">Contato</a>
+              </nav>
+            </div>
+          )}
         </div>
       </header>
 
@@ -1030,7 +1053,7 @@ const App: React.FC = () => {
       <footer className="py-16 bg-white border-t border-slate-50">
         <div className="container mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-16">
           <div className="flex flex-col items-center md:items-start">
-             <img src="\images\Logo.png" alt="Minas Laser Logo" className="h-16 md:h-9 object-contain" onError={(e) => { e.currentTarget.src = "https://i.ibb.co/LdfV8R9/logo-minas.png"; }} />
+             <img src="/images/Logo.png" alt="Minas Laser Logo" className="h-16 md:h-9 object-contain" onError={(e) => { e.currentTarget.src = "https://i.ibb.co/LdfV8R9/logo-minas.png"; }} />
              <div className="w-12 h-[3px] bg-gradient-to-r from-[var(--brand-hot)] to-[var(--brand-wine)] mt-4"></div>
           </div>
           <div className="text-center">
