@@ -259,15 +259,35 @@
             '</div>';
         }
 
+        function reloadFresh() {
+          try {
+            if (sessionStorage.getItem('ml_reloaded')) return false;
+            sessionStorage.setItem('ml_reloaded', '1');
+          } catch (err) {
+            return false;
+          }
+          var url = new URL(window.location.href);
+          url.searchParams.set('_r', Date.now().toString());
+          window.location.replace(url.toString());
+          return true;
+        }
+
         window.__ml_loaded = false;
         window.addEventListener('error', function (e) {
+          var target = e && e.target;
+          if (target && target !== window && (target.tagName === 'SCRIPT' || target.tagName === 'LINK')) {
+            if (reloadFresh()) return;
+            showError('resource-load', 'Falha ao carregar ' + (target.src || target.href || 'recurso'));
+            return;
+          }
           showError('window.error', (e && (e.error && e.error.message)) || (e && e.message) || 'Erro desconhecido');
-        });
+        }, true);
         window.addEventListener('unhandledrejection', function (e) {
           showError('unhandledrejection', e && e.reason ? e.reason : 'Promise rejeitada');
         });
         setTimeout(function () {
           if (!window.__ml_loaded) {
+            if (reloadFresh()) return;
             showError('bootstrap-timeout', 'Aplicação não inicializou em até 6 segundos');
           }
         }, 6000);
