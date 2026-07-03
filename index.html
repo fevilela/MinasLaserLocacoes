@@ -246,17 +246,61 @@
     </script>
     <script>
       (function () {
+        function runDiagnostics(container) {
+          var moduleScript = document.querySelector('script[type="module"]');
+          var checks = [
+            { name: 'Documento (mesma origem)', url: window.location.origin + '/', mode: 'cors' },
+            { name: 'Bundle JS principal', url: moduleScript ? moduleScript.src : '', mode: 'cors' },
+            { name: 'Google Fonts', url: 'https://fonts.googleapis.com/css2?family=Roboto', mode: 'no-cors' },
+            { name: 'Tailwind CDN', url: 'https://cdn.tailwindcss.com', mode: 'no-cors' },
+            { name: 'Google Tag Manager', url: 'https://www.googletagmanager.com/gtag/js?id=G-P7043Q1XBZ', mode: 'no-cors' }
+          ];
+          var list = document.createElement('div');
+          list.style.marginTop = '12px';
+          list.style.fontSize = '13px';
+          var title = document.createElement('strong');
+          title.textContent = 'Diagnóstico de rede:';
+          list.appendChild(title);
+          container.appendChild(list);
+
+          checks.forEach(function (check) {
+            var row = document.createElement('div');
+            if (!check.url) {
+              row.textContent = check.name + ': recurso não encontrado no HTML';
+              list.appendChild(row);
+              return;
+            }
+            row.textContent = check.name + ': testando…';
+            list.appendChild(row);
+            var controller = new AbortController();
+            var timeout = setTimeout(function () { controller.abort(); }, 5000);
+            fetch(check.url, { mode: check.mode, cache: 'no-store', signal: controller.signal })
+              .then(function (res) {
+                clearTimeout(timeout);
+                row.textContent = check.name + ': OK (status ' + (check.mode === 'no-cors' ? 'alcançado, sem CORS' : res.status) + ')';
+              })
+              .catch(function (err) {
+                clearTimeout(timeout);
+                row.textContent = check.name + ': FALHOU (' + (err && err.message ? err.message : 'erro de rede') + ')';
+                row.style.color = '#c00';
+              });
+          });
+        }
+
         function showError(label, detail) {
           var root = document.getElementById('root') || document.body;
           if (!root) return;
           var msg = String(detail || '');
-          root.innerHTML =
-            '<div style="font-family:Arial,sans-serif;padding:20px;line-height:1.4;color:#111">' +
+          var box = document.createElement('div');
+          box.style.cssText = 'font-family:Arial,sans-serif;padding:20px;line-height:1.4;color:#111';
+          box.innerHTML =
             '<h2 style="margin:0 0 8px 0;">Erro ao carregar o site</h2>' +
             '<p style="margin:0 0 6px 0;"><strong>Origem:</strong> ' + label + '</p>' +
             '<p style="margin:0 0 12px 0;"><strong>Detalhe:</strong> ' + msg.replace(/</g, '&lt;') + '</p>' +
-            '<p style="margin:0;color:#555">Envie um print desta tela.</p>' +
-            '</div>';
+            '<p style="margin:0 0 12px 0;color:#555">Envie um print desta tela (espere uns segundos para o diagnóstico completar).</p>';
+          root.innerHTML = '';
+          root.appendChild(box);
+          runDiagnostics(box);
         }
 
         function reloadFresh() {
