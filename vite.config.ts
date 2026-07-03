@@ -13,7 +13,7 @@ export default defineConfig(({ mode }) => {
       cssTarget: 'safari15',
     },
     server: {
-      port: 3000,
+      port: 5000,
       host: '0.0.0.0',
       allowedHosts: true,
     },

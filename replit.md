@@ -33,7 +33,7 @@ Preferred communication style: Simple, everyday language.
 
 5. **Path aliases**: `@/*` maps to the project root directory, configured in both `tsconfig.json` and `vite.config.ts`.
 
-6. **Dev server**: Vite runs on port 3000, bound to `0.0.0.0` with all hosts allowed — appropriate for Replit deployment.
+6. **Dev server**: Vite runs on port 5000, bound to `0.0.0.0` with all hosts allowed — appropriate for Replit deployment.
 
 ### Project Structure
 ```
@@ -49,7 +49,7 @@ Preferred communication style: Simple, everyday language.
 ```
 
 ### Scripts
-- `npm run dev` — Start Vite dev server on port 3000
+- `npm run dev` — Start Vite dev server on port 5000
 - `npm run build` — Production build
 - `npm run preview` — Preview production build
 

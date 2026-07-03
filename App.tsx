@@ -4,13 +4,11 @@ import {
   X, 
   Layers,
   Send,
-  Loader2,
   Info,
   Monitor,
   ShieldCheck,
   TrendingUp,
   Cpu,
-  CheckCircle,
   Plus,
   Maximize2,
   Target,
@@ -33,11 +31,6 @@ const WHATSAPP_NUMBERS = (((import.meta as any).env.VITE_WHATSAPP_NUMBERS as str
   .map((n) => n.trim())
   .filter(Boolean);
 const WHATSAPP_ROTATION_KEY = 'ml_whatsapp_rotation_idx';
-const LEADS_ROTATION_KEY = 'ml_leads_rotation_idx';
-const WHATSAPP_ASSIGNEE_NAMES = (((import.meta as any).env.VITE_WHATSAPP_ASSIGNEE_NAMES as string) || 'Thaina,Ana')
-  .split(',')
-  .map((n) => n.trim())
-  .filter(Boolean);
 
 const buildWhatsAppLinkForNumber = (number: string, text: string) =>
   `https://wa.me/${number}?text=${encodeURIComponent(text)}`;
@@ -56,28 +49,6 @@ const getNextWhatsAppNumber = () => {
     return WHATSAPP_NUMBERS[current % WHATSAPP_NUMBERS.length] || WHATSAPP_NUMBERS[0];
   } catch {
     return WHATSAPP_NUMBERS[0];
-  }
-};
-
-const getNextLeadAssignee = () => {
-  if (!WHATSAPP_NUMBERS.length) {
-    return { name: 'Consultora', number: '5535999948797' };
-  }
-  if (typeof window === 'undefined') {
-    return { name: WHATSAPP_ASSIGNEE_NAMES[0] || 'Consultora', number: WHATSAPP_NUMBERS[0] };
-  }
-
-  try {
-    const current = Number(window.localStorage.getItem(LEADS_ROTATION_KEY) || '0');
-    const idx = Number.isFinite(current) ? current % WHATSAPP_NUMBERS.length : 0;
-    const nextIndex = (idx + 1) % WHATSAPP_NUMBERS.length;
-    window.localStorage.setItem(LEADS_ROTATION_KEY, String(nextIndex));
-    return {
-      name: WHATSAPP_ASSIGNEE_NAMES[idx] || `Consultora ${idx + 1}`,
-      number: WHATSAPP_NUMBERS[idx],
-    };
-  } catch {
-    return { name: WHATSAPP_ASSIGNEE_NAMES[0] || 'Consultora', number: WHATSAPP_NUMBERS[0] };
   }
 };
 
@@ -326,15 +297,11 @@ const PostModal: React.FC<{ post: BlogPost; onClose: () => void }> = ({ post, on
 };
 
 const App: React.FC = () => {
-  const LEADS_WEBHOOK_URL = (import.meta as any).env.VITE_LEADS_WEBHOOK_URL || '';
   const defaultWhatsappText = 'Olá! Vim pelo site da Minas Laser e quero solicitar um orçamento para locação de equipamentos.';
   const [selectedEquipment, setSelectedEquipment] = useState<Equipment | null>(null);
   const [selectedPost, setSelectedPost] = useState<BlogPost | null>(null);
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
   const [activeCategory, setActiveCategory] = useState<string>('Todos');
-  const [formState, setFormState] = useState<'idle' | 'submitting' | 'success'>('idle');
-  const [formError, setFormError] = useState<string>('');
-  const [leadForm, setLeadForm] = useState({ name: '', whatsapp: '' });
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [currentIdx, setCurrentIdx] = useState(0);
@@ -766,55 +733,6 @@ const App: React.FC = () => {
 
     return () => observer.disconnect();
   }, []);
-
-  const handleFormSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setFormError('');
-    setFormState('submitting');
-    trackEvent('lead_form_submit_attempt', {
-      section: 'contato',
-      cta: 'quero_atendimento_prioritario',
-      channel: 'form',
-    });
-    try {
-      if (!LEADS_WEBHOOK_URL) {
-        throw new Error('Webhook não configurado');
-      }
-      const assignee = getNextLeadAssignee();
-
-      const payload = {
-        name: leadForm.name.trim(),
-        whatsapp: leadForm.whatsapp.trim(),
-        source: 'site-minas-laser',
-        assignee_name: assignee.name,
-        assignee_whatsapp: assignee.number,
-        submittedAt: new Date().toISOString(),
-      };
-
-      await fetch(LEADS_WEBHOOK_URL, {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
-
-      trackEvent('lead_form_submit_success', {
-        section: 'contato',
-        channel: 'form',
-      });
-      setFormState('success');
-      setLeadForm({ name: '', whatsapp: '' });
-      setTimeout(() => setFormState('idle'), 8000);
-    } catch (error) {
-      console.error('Erro ao enviar lead:', error);
-      trackEvent('lead_form_submit_error', {
-        section: 'contato',
-        channel: 'form',
-      });
-      setFormState('idle');
-      setFormError('Não foi possível enviar agora. Tente novamente em instantes.');
-    }
-  };
 
   const currentEq = heroEquipments[currentIdx] || heroEquipments[0];
 
@@ -1286,46 +1204,6 @@ const App: React.FC = () => {
                     </a>
                   </div>
                 </div>
-                <div className="bg-white/50 p-8 rounded-[2rem] border border-fuchsia-50 shadow-inner">
-                 {formState === 'success' ? (
-                   <div className="text-center py-16 animate-fadeIn">
-                     <CheckCircle className="text-[var(--brand-wine)] w-16 h-16 mx-auto mb-8" />
-                     <h3 className="text-2xl font-black uppercase tracking-widest mb-4 text-black">Sucesso</h3>
-                     <p className="text-slate-500 text-sm">O time de especialistas entrará em contato.</p>
-                   </div>
-                 ) : (
-                   <form className="space-y-10" onSubmit={handleFormSubmit}>
-                     <input
-                       required
-                       value={leadForm.name}
-                       onChange={(e) => setLeadForm((prev) => ({ ...prev, name: e.target.value }))}
-                       className="w-full bg-transparent border-b-2 border-slate-100 py-5 outline-none focus:border-[var(--brand-wine)] transition-all text-xs font-bold uppercase tracking-widest placeholder:text-slate-300 text-black"
-                       placeholder="NOME / PROFISSIONAL"
-                     />
-                     <input
-                       required
-                       type="tel"
-                       value={leadForm.whatsapp}
-                       onChange={(e) => setLeadForm((prev) => ({ ...prev, whatsapp: e.target.value }))}
-                       className="w-full bg-transparent border-b-2 border-slate-100 py-5 outline-none focus:border-[var(--brand-wine)] transition-all text-xs font-bold uppercase tracking-widest placeholder:text-slate-300 text-black"
-                       placeholder="WHATSAPP (35) 99999-9999"
-                     />
-                     {formError && <p className="text-xs font-semibold text-red-500">{formError}</p>}
-                     <button type="submit" disabled={formState === 'submitting'} className="w-full py-7 bg-gradient-to-r from-black to-slate-800 text-white font-black uppercase tracking-[0.5em] text-[11px] hover:from-[var(--brand-hot)] hover:to-[var(--brand-wine)] transition-all shadow-2xl hover:scale-[1.02] active:scale-[0.98]">{formState === 'submitting' ? <Loader2 className="w-5 h-5 animate-spin mx-auto" /> : 'Quero atendimento prioritário'}</button>
-                      <a
-                        href={getDefaultWhatsAppLink(defaultWhatsappText)}
-                        onClick={(e) => {
-                          handleWhatsAppCtaClick(e, defaultWhatsappText, 'contato', 'reservar_equipamento_whatsapp');
-                        }}
-                       target="_blank"
-                       rel="noopener noreferrer"
-                       className="w-full py-4 mt-2 border border-fuchsia-200 text-[var(--brand-wine)] font-black uppercase tracking-[0.35em] text-[10px] text-center rounded-xl hover:bg-fuchsia-50 transition-colors block"
-                     >
-                        Reservar equipamento pelo WhatsApp
-                      </a>
-                    </form>
-                  )}
-               </div>
              </div>
           </div>
         </div>
