@@ -348,13 +348,13 @@ const App: React.FC = () => {
     },
     {
       id: '4',
-      title: 'INKIE',
-      description: 'O Inkie é um laser de alta performance para remoção de tatuagem e lesões pigmentadas em clínicas de ponta. Com o INC, você amplia possibilidades de tratamento com segurança e resultados consistentes.',
+      title: 'ESPECTRA XT',
+      description: 'O Lutronic Spectra XT é um laser de alta performance Nd:YAG Q-Switched para remoção de tatuagem, lesões pigmentadas e rejuvenescimento facial (Carbon Peel) em clínicas de ponta. Com o Spectra XT, você amplia possibilidades de tratamento com segurança e resultados consistentes.',
       highlight: 'LASER ND-YAG-Q-SWITCH',
-      image: imageUrl('Inkie%20Laser.png'),
+      image: imageUrl('Espectra.png'),
       category: 'Remoção de Tatuagem',
       specs: [
-        { label: 'Foco', value: 'Tatuagens e Lesões Pigmentadas' },
+        { label: 'Foco', value: 'Tatuagens, Lesões Pigmentadas e Rejuvenescimento' },
         { label: 'Disparos', value: 'Alta performance por pulso' },
         { label: 'Segurança', value: 'Protocolos Precisos' }
       ]
